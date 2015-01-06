@@ -1,0 +1,15 @@
+package org.usfirst.frc.team3324.robot;
+
+import edu.wpi.first.wpilibj.*;
+
+public class MetroJS {
+	public Hand Hand.left;
+	
+	public static void getAxis() {
+		
+	}
+	
+	public MetroJS() {
+		
+	}
+}

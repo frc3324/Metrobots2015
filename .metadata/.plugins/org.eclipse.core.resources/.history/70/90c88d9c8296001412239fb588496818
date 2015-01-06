@@ -1,0 +1,14 @@
+package org.usfirst.frc.team3324.robot;
+
+import edu.wpi.first.wpilibj.*;
+
+public class MetroJS {
+	
+	public static void getAxis() {
+		
+	}
+	
+	public MetroJS() {
+		
+	}
+}

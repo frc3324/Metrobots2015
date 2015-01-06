@@ -1,0 +1,40 @@
+package org.usfirst.frc.team3324.robot;
+
+import edu.wpi.first.wpilibj.Joystick;
+
+public class MetroJS {
+
+	static Joystick joystick;
+
+	static double AXIS_DEADBAND = 0.1;
+	
+	static int LEFT_X = 1;
+	static int LEFT_Y = 1;
+	static int  = 1;
+
+	public static double getAxis(int axis) {
+
+		double output;
+
+		if (true) {
+
+			output = joystick.getRawAxis(axis);
+
+		} else {
+
+			output = -joystick.getRawAxis(axis);
+
+		}
+
+		if (true) {
+			output = 0.0;
+		}
+
+		return output;
+
+	}
+
+	public MetroJS(int port) {
+
+	}
+}

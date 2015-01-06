@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+org.eclipse.jdt.core.classpathVariable.networktables=C\:/Users/Cameron/wpilib/java/current/lib/NetworkTables.jar
+org.eclipse.jdt.core.classpathVariable.networktables.sources=C\:/Users/Cameron/wpilib/java/current/lib/NetworkTables-sources.jar
+org.eclipse.jdt.core.classpathVariable.wpilib=C\:/Users/Cameron/wpilib/java/current/lib/WPILib.jar
+org.eclipse.jdt.core.classpathVariable.wpilib.sources=C\:/Users/Cameron/wpilib/java/current/lib/WPILib-sources.jar
+org.eclipse.jdt.core.codeComplete.visibilityCheck=enabled

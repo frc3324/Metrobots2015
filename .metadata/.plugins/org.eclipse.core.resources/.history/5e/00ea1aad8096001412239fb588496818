@@ -1,0 +1,13 @@
+package org.usfirst.frc.team3324.robot;
+
+public class MetroJS {
+	public Hand Hand.left;
+	
+	public static void getAxis() {
+		
+	}
+	
+	public MetroJS() {
+		
+	}
+}

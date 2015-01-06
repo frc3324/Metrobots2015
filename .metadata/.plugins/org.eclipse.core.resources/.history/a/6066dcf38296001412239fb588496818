@@ -1,0 +1,36 @@
+package org.usfirst.frc.team3324.robot;
+
+import edu.wpi.first.wpilibj.Joystick;
+
+
+public class MetroJS {
+
+	static Joystick joystick;
+	
+	public static int getAxis(){
+
+		double output;
+		
+		if( true ){
+
+		    output = joystick.GetRawAxis( axis );
+
+	    }
+	    else{
+
+	        output = -joystick.GetRawAxis( axis );
+
+	    }
+		
+		if( true ){
+			output = 0.0;
+		}
+
+		return output;
+			
+	}
+
+	public MetroJS(int port) {
+
+	}
+}

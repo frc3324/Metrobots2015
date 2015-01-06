@@ -1,0 +1,35 @@
+package org.usfirst.frc.team3324.robot;
+
+import edu.wpi.first.wpilibj.*;
+
+public class MetroJS {
+	
+	static 
+	
+	public static int getAxis(){
+
+		double output;
+		
+		if( axis == GamePad::LEFT_X || axis == GamePad::RIGHT_X ){
+
+		    output = joystick_->GetRawAxis( axis );
+
+	    }
+	    else{
+
+	        output = -joystick_->GetRawAxis( axis );
+
+	    }
+		
+		if( fabs(output) < GamePad::AXIS_DEADBAND ){
+			output = 0.0;
+		}
+
+		return output;
+			
+	}
+	
+	public MetroJS() {
+		
+	}
+}
