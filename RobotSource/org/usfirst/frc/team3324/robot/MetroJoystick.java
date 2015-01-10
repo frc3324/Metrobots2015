@@ -13,8 +13,7 @@ public class MetroJoystick extends Joystick
 	public static final int RIGHT_X = 4;
 	public static final int RIGHT_Y = 5;
 	// Digital Inputs (Buttons)
-	public static final int BUTTON_A = 1, BUTTON_B = 2, BUTTON_X = 3,
-			BUTTON_Y = 4;
+	public static final int BUTTON_A = 1, BUTTON_B = 2, BUTTON_X = 3, BUTTON_Y = 4;
 	public static final int BUMPER_LEFT = 5, BUMPER_RIGHT = 6;
 	public static final int BUTTON_BACK = 7, BUTTON_START = 8;
 
@@ -23,18 +22,20 @@ public class MetroJoystick extends Joystick
 		super(port);
 	}
 
-	public double getAxis(int axis)
+	@Override
+	public double getRawAxis(int axis)
 	{
+		double value = super.getRawAxis(axis);
 		double output = 0;
-		if (Math.abs(getRawAxis(axis)) > AXIS_DEADBAND)
+		if(Math.abs(value) > AXIS_DEADBAND)
 		{
-			if (axis == LEFT_Y || axis == RIGHT_Y)
+			if(axis == LEFT_Y || axis == RIGHT_Y)
 			{
-				output = -getRawAxis(axis);
+				output = -value;
 			}
 			else
 			{
-				output = getRawAxis(axis);
+				output = value;
 			}
 		}
 		return output;
