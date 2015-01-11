@@ -54,6 +54,17 @@ public abstract class DriveTrain
 	public abstract void drive(Motion m, double fervency);
 
 	/**
+	 * Stops all drive motors on the Robot
+	 */
+	public void stop()
+	{
+		this.flMotor.set(0);
+		this.blMotor.set(0);
+		this.frMotor.set(0);
+		this.brMotor.set(0);
+	}
+
+	/**
 	 * A list of all {@code Motion}s that are allowed by this control system
 	 * 
 	 * @return A array of legal {@code Motion}s this control can use

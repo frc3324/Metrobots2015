@@ -1,5 +1,8 @@
 package org.usfirst.frc.team3324.robot;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class MetroJoystick extends Joystick
@@ -17,9 +20,13 @@ public class MetroJoystick extends Joystick
 	public static final int BUMPER_LEFT = 5, BUMPER_RIGHT = 6;
 	public static final int BUTTON_BACK = 7, BUTTON_START = 8;
 
+	private boolean[] activeButtons = new boolean[this.getButtonCount()];
+	private ArrayList<ActionListener> listeners;
+
 	public MetroJoystick(int port)
 	{
 		super(port);
+		listeners = new ArrayList<>();
 	}
 
 	@Override
@@ -39,5 +46,57 @@ public class MetroJoystick extends Joystick
 			}
 		}
 		return output;
+	}
+
+	/**
+	 * Adds a listener to the list of objects to be notified when a button on the Joystick is
+	 * pressed or released
+	 * 
+	 * @param al
+	 *            Listener to now notify of any button events
+	 */
+	public void addListener(ActionListener al)
+	{
+		this.listeners.add(al);
+	}
+
+	/**
+	 * Removes a listener from the list of objects receiving button press/release events
+	 * 
+	 * @param al
+	 *            Listener that was receiving events
+	 * @return true if al was successfully removed from the list, false otherwise
+	 */
+	public boolean removeListener(ActionListener al)
+	{
+		return this.listeners.remove(al);
+	}
+
+	private void fireEvent(ActionEvent ae)
+	{
+		for(ActionListener al : listeners)
+		{
+			al.actionPerformed(ae);
+		}
+	}
+
+	/**
+	 * Should be called every tick(if you want to use an event-based system for button controls).
+	 * When a button is pressed or released it will fire an event to all listeners of the button's
+	 * number and whether it was pressed or released
+	 */
+	public void update()
+	{
+		for(int i = 0; i < activeButtons.length; i++)
+		{
+			boolean press = this.getRawButton(i + 1);
+			if(press != activeButtons[i])
+			{
+				ActionEvent event = new ActionEvent(this, i + 1, press ? "pressed" : "released");
+				fireEvent(event);
+
+				activeButtons[i] = press;
+			}
+		}
 	}
 }
