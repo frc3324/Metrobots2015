@@ -1,3 +1,9 @@
+/*
+ * Sight -- the eyes of the robot
+ * interprets information from the camera
+ * to find the location of the visible totes
+*/
+
 #ifndef SIGHT_H
 #define SIGHT_H
 
@@ -6,6 +12,12 @@
 
 using namespace cv;
 using namespace std;
+
+namespace socketry
+{
+
+char SERVER = 1;
+char CLIENT = 2;
 
 class Sight
 {
@@ -21,5 +33,7 @@ private:
     VideoCapture cam;
     Mat getThresholded();
 };
+}
+
 
 #endif // SIGHT_H
