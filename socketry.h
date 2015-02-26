@@ -1,3 +1,7 @@
+/* Socketry -- a socket communications library for C++
+ * LINUX ONLY (for the time being)
+ */
+
 #ifndef TALKATIVE_H
 #define TALKATIVE_H
 
@@ -12,19 +16,26 @@ using namespace std;
 namespace socketry
 {
 
+char CLIENT = 1;
+char SERVER = 2;
+
 class Socketry
 {
 public:
     Socketry(char);
     ~Socketry();
     int connect(char*, int);
-    int connect(int);
+    int start(int);
     int send(String);
     String receive();
 
 private:
-    int socket;
+    int socket, cliSocket;
     char type;
+    socklen_t clilen;
+    char buffer[256];
+    struct sockaddr_in sockAddr, cliAddr;
+    struct hostent *server;
 };
 
 }

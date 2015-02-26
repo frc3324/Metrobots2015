@@ -13,9 +13,6 @@
 using namespace cv;
 using namespace std;
 
-namespace socketry
-{
-
 char SERVER = 1;
 char CLIENT = 2;
 
@@ -33,7 +30,6 @@ private:
     VideoCapture cam;
     Mat getThresholded();
 };
-}
 
 
 #endif // SIGHT_H
