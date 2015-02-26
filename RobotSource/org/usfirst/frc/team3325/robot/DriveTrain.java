@@ -1,5 +1,6 @@
 package org.usfirst.frc.team3325.robot;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.SpeedController;
@@ -10,21 +11,21 @@ public class DriveTrain
 
 	public static Encoder flEncoder, blEncoder, frEncoder, brEncoder;
 
-	public static Gyro gyro;
+	public static Gyro gyro, tilt;
 
 	public static boolean isFieldOriented, isHoldAngle, isSlowDrive;
 
-	public static int targetAngle;
-	
+	public static double targetAngle, targetTilt;
+
 	public static int flInv, blInv, frInv, brInv;
-	
+
 	public static int driveType;
-	
+
 	public static final int TANK_DRIVE = 0;
 	public static final int MECANUM_DRIVE = 1;
 	public static final int ARCADE_DRIVE = 2;
 
-	public DriveTrain(SpeedController fl_, SpeedController bl_, SpeedController fr_, SpeedController br_, Encoder flEncoder_, Encoder blEncoder_, Encoder frEncoder_, Encoder brEncoder_, Gyro gyro_)
+	public DriveTrain(SpeedController fl_, SpeedController bl_, SpeedController fr_, SpeedController br_, Encoder flEncoder_, Encoder blEncoder_, Encoder frEncoder_, Encoder brEncoder_, Gyro gyro_, Gyro tilt_)
 	{
 		fl = fl_;
 		bl = bl_;
@@ -35,25 +36,27 @@ public class DriveTrain
 		blEncoder = blEncoder_;
 		frEncoder = frEncoder_;
 		brEncoder = brEncoder_;
-		
+
 		flEncoder.reset();
 		blEncoder.reset();
 		frEncoder.reset();
 		brEncoder.reset();
 
 		gyro = gyro_;
+		tilt = tilt_;
 
 		isFieldOriented = false;
 		isHoldAngle = false;
 
 		targetAngle = 0;
-		
+		targetTilt = 0;
+
 		frInv = 1;
-        brInv = 1;
-        flInv = 1;
-        blInv = 1;
-        
-        driveType = 1;
+		brInv = 1;
+		flInv = 1;
+		blInv = 1;
+
+		driveType = 1;
 	}
 
 	public static void tankDrive(double left, double right)
@@ -71,8 +74,8 @@ public class DriveTrain
 		{
 
 			double gAngle = gyro.getAngle();
-			double cosA = Math.cos(gAngle * 3.14159 / 180);
-			double sinA = Math.sin(gAngle * 3.14159 / 180);
+			double cosA = Math.cos(gAngle * 3.1415926535 / 180);
+			double sinA = Math.sin(gAngle * 3.1415926535 / 180);
 
 			x = (x * cosA) - (y * sinA);
 			y = (x * sinA) + (y * cosA);
@@ -82,39 +85,59 @@ public class DriveTrain
 		if(isHoldAngle)
 		{
 
-			double gyroAngle = gyro.getAngle() % 360.0;
-			double relativeAngle = gyroAngle - targetAngle;
-
-			if(relativeAngle > 180)
-			{
-
-				relativeAngle = (180 - (relativeAngle - 180));
-
-			}
-
-			turn = (-1.0 / 45.0) * relativeAngle;
+			turn = turn + ((targetAngle - gyro.getAngle()) / 20);
 
 		}
 
-		fl.set((y + x + turn) * flInv);
-		bl.set((y - x + turn) * blInv);
-		fr.set((y - x - turn) * frInv);
-		br.set((y + x - turn) * brInv);
-	}
-	
-	public void drive(double lx, double ly, double rx, double ry) {
-		if (driveType == 0) {
-			tankDrive(ly, ry);
-		} else if (driveType == 1) {
-			mecanumDrive(ly, lx, rx);
-		} else if (driveType == 2) {
-			// Insert Arcade Drive
+		if(Math.abs(targetTilt - tilt.getAngle()) > 5)
+		{
+			if(tilt.getAngle() > 0)
+			{
+				y = y - ((targetTilt - tilt.getAngle()) / 50);
+			}
+			else
+			{
+				y = y + ((targetTilt - tilt.getAngle()) / 50);
+			}
+		}
+		
+		turn = turn / 2;
+		if (isSlowDrive) {
+			fl.set((y + x + turn) * flInv * 0.5);
+			bl.set((y - x + turn) * blInv * 0.5);
+			fr.set((y - x - turn) * frInv * 0.5);
+			br.set((y + x - turn) * brInv * 0.5);
 		} else {
+			fl.set((y + x + turn) * flInv);
+			bl.set((y - x + turn) * blInv);
+			fr.set((y - x - turn) * frInv);
+			br.set((y + x - turn) * brInv);
+		}
+
+	}
+
+	public void drive(double lx, double ly, double rx, double ry)
+	{
+		if(driveType == 0)
+		{
+			tankDrive(ly, ry);
+		}
+		else if(driveType == 1)
+		{
+			mecanumDrive(ly, lx, rx);
+		}
+		else if(driveType == 2)
+		{
+			// Insert Arcade Drive
+		}
+		else
+		{
 			stop();
 		}
 	}
-	
-	public void setInvertedMotors(boolean fl, boolean bl, boolean fr, boolean br) {
+
+	public void setInvertedMotors(boolean fl, boolean bl, boolean fr, boolean br)
+	{
 		flInv = fl ? -1 : 1;
 		blInv = bl ? -1 : 1;
 		frInv = fr ? -1 : 1;
@@ -130,70 +153,104 @@ public class DriveTrain
 	{
 		return isSlowDrive;
 	}
-	
-	public void setHoldAngle(boolean val) {
+
+	public void setHoldAngle(boolean val)
+	{
 		isHoldAngle = val;
 	}
-	
-	public boolean isHoldAngle() {
+
+	public boolean isHoldAngle()
+	{
 		return isHoldAngle;
 	}
-	
-	public void setFieldOriented(boolean val) {
+
+	public void setFieldOriented(boolean val)
+	{
 		isFieldOriented = val;
-		if (val) gyro.reset();
 	}
-	
-	public boolean isFieldOriented() {
+
+	public boolean isFieldOriented()
+	{
 		return isFieldOriented;
 	}
-	
-	public int getEncoder(Encoder e){
+
+	public int getEncoder(Encoder e)
+	{
 		return e.get();
 	}
-	
-	public void resetEncoders() {
+
+	public void resetEncoders()
+	{
 		flEncoder.reset();
 		blEncoder.reset();
 		frEncoder.reset();
 		brEncoder.reset();
 	}
-	
-	public double getGyro() {
+
+	public double getGyro()
+	{
 		return gyro.getAngle();
 	}
-	
-	public void resetGyro() {
+
+	public void resetGyro()
+	{
 		gyro.reset();
 	}
-	
-	public void setTargetAngle(int angle) {
+
+	public void setTargetAngle(double angle)
+	{
 		targetAngle = angle;
 	}
-	
-	public int getDistanceMoved() {
+
+	public double getTilt()
+	{
+		return tilt.getAngle();
+	}
+
+	public void resetTilt()
+	{
+		tilt.reset();
+	}
+
+	public void setTargetTilt(double angle)
+	{
+		targetTilt = angle;
+	}
+
+	public int getDistanceMoved()
+	{
 		return (flEncoder.get() + blEncoder.get() + frEncoder.get() + brEncoder.get()) / 4;
 	}
-	
-	public void stop() {
+
+	public void stop()
+	{
 		fl.set(0);
 		bl.set(0);
 		fr.set(0);
 		br.set(0);
 	}
-	
-	public void setDriveType(int type) {
+
+	public void setDriveType(int type)
+	{
 		driveType = type;
 	}
-	
-	public String getDriveType() {
-		if (driveType == 0) {
+
+	public String getDriveType()
+	{
+		if(driveType == 0)
+		{
 			return "Tank Drive";
-		}else if(driveType == 1) {
+		}
+		else if(driveType == 1)
+		{
 			return "Mecanum Drive";
-		}else if(driveType == 2) {
+		}
+		else if(driveType == 2)
+		{
 			return "Arcade Drive";
-		}else{
+		}
+		else
+		{
 			return "Stopped";
 		}
 	}

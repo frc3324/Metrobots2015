@@ -1,45 +1,64 @@
 package org.usfirst.frc.team3325.robot;
 
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
 
 public class LinearLift
 {
-	public static SpeedController motor1;
-	public static SpeedController motor2;
+	private static SpeedController motor;
+	private static AnalogInput bottom;
+	private static DigitalInput top;
 
-	public LinearLift(SpeedController motor1_, SpeedController motor2_)
+	public LinearLift(SpeedController motor_, AnalogInput bottom_, DigitalInput top_)
 	{
 
-		motor1 = motor1_;
-		motor2 = motor2_;
-
-
+		motor = motor_;
+		bottom = bottom_;
+		top = top_;
 	}
 
-	public LinearLift(Talon motor1_, Talon motor2_)
+	public LinearLift(Talon motor_)
 	{
-		motor1 = motor1_;
-		motor2 = motor2_;
+		motor = motor_;
 	}
 
-	public void set(double power)
+	public void set(double value)
 	{
-		motor1.set(power);
-		motor2.set(power);
+		if((value > 0 && !top.get()) || (value < 0 && bottom.getValue() < 50))
+		{
+			motor.set(value/2);
+		}
+		else
+		{
+			motor.set(0);
+		}
 
 	}
 
 	public void lower()
 	{
-		motor1.set(-1);
-		motor2.set(-1);
+		if(bottom.getValue() > 50)
+		{
+			motor.set(-1 / 2);
+		}
+		else
+		{
+			motor.set(0);
+		}
 
 	}
 
 	public void raise()
 	{
-		motor1.set(1);
-		motor2.set(1);
+		if(!top.get())
+		{
+			motor.set(1 / 2);
+		}
+		else
+		{
+			motor.set(0);
+		}
 	}
 }
