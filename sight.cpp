@@ -37,6 +37,7 @@ vector< vector<Point> > Sight::getTotes(vector<Vec4i> &hierarchy) {
     vector< vector<Point> > contours;
     findContours(thresholded, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
     vector< vector<Point> > totes;
+    vector<Point> approx;
     for (int i = 0; i < contours.size(); i++)
     {
         if (contourArea(contours.at(i)) > 100)
