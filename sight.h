@@ -13,9 +13,6 @@
 using namespace cv;
 using namespace std;
 
-char SERVER = 1;
-char CLIENT = 2;
-
 class Sight
 {
 public:

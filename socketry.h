@@ -25,17 +25,17 @@ public:
     Socketry(char);
     ~Socketry();
     int connect(char*, int);
-    int start(int);
-    int send(String);
-    String receive();
+    int start(int, int, bool);
+    int send(char*);
+    char* receive();
 
 private:
-    int socket, cliSocket;
+    int server, client;
     char type;
     socklen_t clilen;
     char buffer[256];
     struct sockaddr_in sockAddr, cliAddr;
-    struct hostent *server;
+    struct hostent *servIP;
 };
 
 }

@@ -9,7 +9,7 @@ using namespace std;
 
 int main()
 {
-    Sight sight(1, 640, 480);
+    Sight sight(0, 640, 480);
     namedWindow("image", CV_WINDOW_AUTOSIZE);
 
     while (true)
