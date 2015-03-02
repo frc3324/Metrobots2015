@@ -32,18 +32,17 @@ Mat Sight::getThresholded()
     return thresholded;
 }
 
-vector< vector<Point> > Sight::getTotes(vector<Vec4i> &hierarchy) {
+vector<Rect> Sight::getTotes(vector<Vec4i> &hierarchy) {
     Mat thresholded = getThresholded();
     vector< vector<Point> > contours;
     findContours(thresholded, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
-    vector< vector<Point> > totes;
-    vector<Point> approx;
+
+    Rect rect;
+    vector<Rect> totes;
     for (int i = 0; i < contours.size(); i++)
     {
         if (contourArea(contours.at(i)) > 100)
-        {
-            totes.push_back(contours.at(i));
-        }
+            totes.push_back(boundingRect(contours.at(i)));
     }
     return totes;
 }
@@ -51,8 +50,7 @@ vector< vector<Point> > Sight::getTotes(vector<Vec4i> &hierarchy) {
 Mat Sight::getFrame() {
     Mat frame; cam.read(frame);
     vector<Vec4i> hierarchy;
-    vector< vector<Point> > totes = getTotes(hierarchy);
-    //cout << totes.size() << " totes found.\n";
+    vector<Rect> totes = getTotes(hierarchy);
     for(int i = 0; i < totes.size(); i++)
     {
          Scalar color = Scalar(0, 255, 0);

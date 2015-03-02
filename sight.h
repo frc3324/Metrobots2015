@@ -18,7 +18,7 @@ class Sight
 public:
     Sight(int, int, int);
     ~Sight();
-    vector< vector<Point> > getTotes(vector<Vec4i>&);
+    vector<Rect> getTotes(vector<Vec4i>&);
     Mat getFrame();
 
 private:
