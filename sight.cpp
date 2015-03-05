@@ -51,12 +51,16 @@ vector<float> Sight::getAngles(vector<Rect> rects, float width)
 {
     vector<float> angles;
     Rect rect;
-    int distance, length;
+    int distance, length, widthpx, width;
     for (int i = 0; i < rects.size(); i++)
     {
         rect = rects.at(i);
         distance = (width * focalWidth) / rect.width;
+
         widthpx = (rect.x + .5 * rect.width) - cam.get(3) / 2;
+        width = widthpx * (rect.width / 683);
+
+        angl
     }
 }
 
