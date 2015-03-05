@@ -19,11 +19,13 @@ public:
     Sight(int, int, int);
     ~Sight();
     vector<RotatedRect> getTotes(vector<Vec4i>&);
+    vector<float> getAngles(vector<RotatedRect>, float width);
     Mat getFrame();
 
 private:
     Scalar max = Scalar(37.5, 235, 266);
     Scalar min = Scalar(17.5, 135, 166);
+    float focalWidth;
     VideoCapture cam;
     Mat getThresholded();
 };
