@@ -1,6 +1,5 @@
 package org.usfirst.frc.team3325.robot;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.SpeedController;
@@ -89,7 +88,7 @@ public class DriveTrain
 
 		}
 
-		if(Math.abs(targetTilt - tilt.getAngle()) > 5)
+		/*if(Math.abs(targetTilt - tilt.getAngle()) > 5)
 		{
 			if(tilt.getAngle() > 0)
 			{
@@ -99,14 +98,14 @@ public class DriveTrain
 			{
 				y = y + ((targetTilt - tilt.getAngle()) / 50);
 			}
-		}
+		}*/
 		
-		turn = turn / 2;
+		turn = turn / 3;
 		if (isSlowDrive) {
-			fl.set((y + x + turn) * flInv * 0.5);
-			bl.set((y - x + turn) * blInv * 0.5);
-			fr.set((y - x - turn) * frInv * 0.5);
-			br.set((y + x - turn) * brInv * 0.5);
+			fl.set((y + x + turn) * flInv * 0.6);
+			bl.set((y - x + turn) * blInv * 0.6);
+			fr.set((y - x - turn) * frInv * 0.6);
+			br.set((y + x - turn) * brInv * 0.6);
 		} else {
 			fl.set((y + x + turn) * flInv);
 			bl.set((y - x + turn) * blInv);

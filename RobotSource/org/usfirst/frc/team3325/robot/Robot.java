@@ -1,8 +1,9 @@
 package org.usfirst.frc.team3325.robot;
 
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Gyro;
@@ -25,44 +26,40 @@ public class Robot extends IterativeRobot
 	 * initialization code.
 	 */
 
-	private DriveTrain chassis;
+	public static DriveTrain chassis;
 	// private Robot robot;
-	private Talon fl, bl, fr, br;
-	private Talon liftMotor;
-	private Talon armMotor;
-	private DigitalInput armBottom;
-	private Encoder flEncoder, blEncoder, frEncoder, brEncoder;
-	private Gyro gyro, tilt;
+	public static CANTalon fl, bl, fr, br;
+	public static CANTalon liftMotor;
+	public static Talon armMotor;
+	public static DigitalInput armBottom;
+	public static Encoder flEncoder, blEncoder, frEncoder, brEncoder;
+	public static Gyro gyro, tilt;
 
-	private Timer timer;
+	public static Timer timer;
 
-	private MetroJS driver;
-	private MetroJS lifterJS;
+	public static MetroJS driver;
+	public static MetroJS lifterJS;
 
-	private MouseAPI mouse;
-	private boolean mouseOn;
+	public static LinearLift autonLift;
 
-	private LinearLift autonLift;
+	public static AnalogInput autonBottom;
+	public static DigitalInput autonTop;
+	public static AnalogInput autonHasTote;
 
-	private AnalogInput autonBottom;
-	private DigitalInput autonTop;
+	public static ArmLift armLift;
 
-	private ArmLift armLift;
-	
-	private GenericHID usbthing;
+	public static GenericHID usbthing;
 
-	int autonCount;
-
-	// private RGBLED led;
+	public static DriverStation ds;
 
 	public void robotInit()
 	{
-		fl = new Talon(4);
-		bl = new Talon(3);
-		fr = new Talon(2);
-		br = new Talon(1);
+		fl = new CANTalon(4);
+		bl = new CANTalon(3);
+		fr = new CANTalon(2);
+		br = new CANTalon(1);
 
-		liftMotor = new Talon(6);
+		liftMotor = new CANTalon(6);
 		armMotor = new Talon(5);
 
 		armBottom = new DigitalInput(9);
@@ -77,11 +74,10 @@ public class Robot extends IterativeRobot
 
 		autonBottom = new AnalogInput(2);
 		autonTop = new DigitalInput(8);
+		autonHasTote = new AnalogInput(3);
 
 		driver = new MetroJS(0);
 		lifterJS = new MetroJS(1);
-
-		// led = new RGBLED(1/* , 2, 3 */);
 
 		chassis = new DriveTrain(fl, bl, fr, br, flEncoder, blEncoder, frEncoder, brEncoder, gyro, tilt);
 		chassis.setInvertedMotors(false, false, true, true);
@@ -90,20 +86,11 @@ public class Robot extends IterativeRobot
 		autonLift = new LinearLift(liftMotor, autonBottom, autonTop);
 
 		armLift = new ArmLift(armMotor, armBottom);
-		
-		CameraServer.getInstance().startAutomaticCapture("cam3");
-		
-		
-
-		/*
-		 * try { mouse = new MouseAPI(false); mouse.start(); mouseOn = true; } catch(IOException e)
-		 * { e.printStackTrace(); }
-		 */
-
-		mouseOn = false;
 
 		timer = new Timer();
 		timer.start();
+
+		ds = m_ds;
 
 	}
 
@@ -117,13 +104,17 @@ public class Robot extends IterativeRobot
 		timer.start();
 		gyro.reset();
 		chassis.setDriveType(DriveTrain.MECANUM_DRIVE);
-		chassis.setHoldAngle(true);
+		/*chassis.setHoldAngle(true);
 		chassis.setFieldOriented(true);
 		chassis.setTargetAngle(chassis.getGyro());
 		chassis.resetTilt();
-		chassis.setTargetTilt(chassis.getTilt());
+		chassis.setTargetTilt(chassis.getTilt());*/
+		
+		chassis.setHoldAngle(false);
+		chassis.setFieldOriented(false);
 
-		autonCount = 0;
+		Auton.setAutonCount(0);
+
 	}
 
 	/**
@@ -131,27 +122,8 @@ public class Robot extends IterativeRobot
 	 */
 	public void autonomousPeriodic()
 	{
-		switch(autonCount)
-		{
-			case 0:
-				chassis.drive(0, -0.25, 0, 0);
-				autonLift.set(-2);
-				if (autonBottom.getValue() > 50) {
-					autonCount++;
-					timer.reset();
-				}
-				break;
-			case 1:
-				autonLift.set(1);
-				if (autonTop.get()) {
-					autonCount++;
-					timer.reset();
-				}
-				break;
-			case 2:
-				chassis.drive(0, 0, 0, 0);
-				break;
-		}
+		Auton.run();
+		printValues();
 	}
 
 	/**
@@ -159,11 +131,18 @@ public class Robot extends IterativeRobot
 	 */
 	public void teleopInit()
 	{
+		/*if(chassis.getGyro() < 720)
+			chassis.setHoldAngle(true);
+		elsea*/
+			chassis.setHoldAngle(false);
+		chassis.setFieldOriented(false);
 		chassis.setDriveType(DriveTrain.MECANUM_DRIVE);
-		chassis.setHoldAngle(true);
 		chassis.setTargetAngle(chassis.getGyro());
 		chassis.resetTilt();
 		chassis.setTargetTilt(chassis.getTilt());
+
+		driver.prevA = false;
+		driver.toggleA = false;
 	}
 
 	/**
@@ -171,14 +150,14 @@ public class Robot extends IterativeRobot
 	 */
 	public void teleopPeriodic()
 	{
-		chassis.setHoldAngle(driver.toggleWhenPressed(MetroJS.BUTTON_A));
+		//chassis.setHoldAngle(driver.toggleWhenPressed(MetroJS.BUTTON_A));
 
-		if(driver.toggleWhenPressed(MetroJS.BUTTON_A) && driver.getButton(MetroJS.BUTTON_A))
+		/*if(driver.toggleWhenPressed(MetroJS.BUTTON_A) && driver.getButton(MetroJS.BUTTON_A))
 		{
 			chassis.setTargetAngle(gyro.getAngle());
-		}
+		}*/
 
-		chassis.setFieldOriented(driver.toggleWhenPressed(MetroJS.BUTTON_X));
+		//chassis.setFieldOriented(driver.toggleWhenPressed(MetroJS.BUTTON_X));
 
 		chassis.drive(driver.getAxis(MetroJS.LEFT_X), driver.getAxis(MetroJS.LEFT_Y), driver.getAxis(MetroJS.RIGHT_X), driver.getAxis(MetroJS.RIGHT_Y));
 
@@ -191,18 +170,7 @@ public class Robot extends IterativeRobot
 			chassis.setSlowDrive(false);
 		}
 
-		if(lifterJS.getDPadY() == 1)
-		{
-			armLift.set(1);
-		}
-		else if(lifterJS.getDPadY() == -1)
-		{
-			armLift.set(-1);
-		}
-		else
-		{
-			armLift.set(0);
-		}
+		armLift.set(lifterJS.getDPadY());
 
 		if(lifterJS.getButton(MetroJS.RB))
 		{
@@ -217,9 +185,9 @@ public class Robot extends IterativeRobot
 			autonLift.set(0);
 		}
 
-		chassis.setHoldAngle(driver.toggleWhenPressed(MetroJS.BUTTON_A));
+		/*chassis.setHoldAngle(driver.toggleWhenPressed(MetroJS.BUTTON_A));
 
-		chassis.setFieldOriented(driver.toggleWhenPressed(MetroJS.BUTTON_X));
+		chassis.setFieldOriented(driver.toggleWhenPressed(MetroJS.BUTTON_X));*/
 
 		if(driver.getButton(MetroJS.BUTTON_B))
 		{
@@ -231,7 +199,7 @@ public class Robot extends IterativeRobot
 		{
 			tilt.reset();
 		}
-		
+
 		printValues();
 	}
 
@@ -254,9 +222,9 @@ public class Robot extends IterativeRobot
 	public void disabledPeriodic()
 	{
 
-		chassis.setHoldAngle(driver.toggleWhenPressed(MetroJS.BUTTON_A));
+		/*chassis.setHoldAngle(driver.toggleWhenPressed(MetroJS.BUTTON_A));
 
-		chassis.setFieldOriented(driver.toggleWhenPressed(MetroJS.BUTTON_X));
+		chassis.setFieldOriented(driver.toggleWhenPressed(MetroJS.BUTTON_X));*/
 
 		if(driver.getButton(MetroJS.BUTTON_B))
 		{
@@ -264,32 +232,43 @@ public class Robot extends IterativeRobot
 			chassis.resetTilt();
 		}
 
-		if(Math.abs(tilt.getAngle()) < 0.5)
+		/*if(Math.abs(tilt.getAngle()) < 0.5)
 		{
 			tilt.reset();
-		}
-		
-		printValues();
-		
-		
-	}
-	
-	public void printValues() {
-		SmartDashboard.putNumber("Gyro Angle ", chassis.getGyro());
-		SmartDashboard.putBoolean("Hold Angle ", chassis.isHoldAngle());
-		SmartDashboard.putBoolean("Field Oriented ", chassis.isFieldOriented());
-		SmartDashboard.putNumber("Tilt ", tilt.getAngle());
-		SmartDashboard.putNumber("flEncoder ", flEncoder.get());
-		SmartDashboard.putNumber("blEncoder ", blEncoder.get());
-		SmartDashboard.putNumber("frEncoder ", frEncoder.get());
-		SmartDashboard.putNumber("brEncoder ", brEncoder.get());
+		}*/
 
-		SmartDashboard.putNumber("autonswitch ", autonBottom.getValue());
+		if(driver.getButton(MetroJS.BUTTON_Y))
+		{
+			Auton.cycleType();
+		}
+
+		printValues();
+
+
+	}
+
+	public void printValues()
+	{
+		SmartDashboard.putBoolean("Hold Angle", chassis.isHoldAngle());
+		SmartDashboard.putBoolean("Field Oriented", chassis.isFieldOriented());
+		SmartDashboard.putNumber("Gyro Angle", chassis.getGyro());
+		SmartDashboard.putNumber("Tilt", tilt.getAngle());
+
+		SmartDashboard.putNumber("autonswitch ", autonBottom.getVoltage());
+		SmartDashboard.putBoolean("autonTop", autonTop.get());
+
+		SmartDashboard.putString("autonType", Auton.getAutonType());
+
+		SmartDashboard.putBoolean("armswitch", armBottom.get());
+		SmartDashboard.putNumber("autonBottom", autonBottom.getVoltage());
 		SmartDashboard.putBoolean("autonTop", autonTop.get());
 		
-		SmartDashboard.putNumber("drive lx", driver.getAxis(MetroJS.LEFT_X));
-		SmartDashboard.putNumber("lifter lx", lifterJS.getAxis(MetroJS.LEFT_X));
+		SmartDashboard.putNumber("lifterdpad", lifterJS.getDPadY());
 		
+		SmartDashboard.putNumber("bottombump", autonHasTote.getVoltage());
+		
+		SmartDashboard.putNumber("auytonCount", Auton.autonCount);
+
 	}
 
 }

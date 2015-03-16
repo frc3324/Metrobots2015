@@ -30,7 +30,7 @@ public class ArmLift
 
 	public void set(double speed)
 	{
-		if(speed < 0 && !button.get())
+		if(speed < 0 && button.get())
 		{
 			motor.set(-speed);
 		}

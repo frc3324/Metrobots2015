@@ -26,7 +26,7 @@ public class LinearLift
 
 	public void set(double value)
 	{
-		if((value > 0 && !top.get()) || (value < 0 && bottom.getValue() < 50))
+		if((value > 0 && !top.get()) || (value < 0 && bottom.getVoltage() < 0.2))
 		{
 			motor.set(value/2);
 		}
@@ -39,7 +39,7 @@ public class LinearLift
 
 	public void lower()
 	{
-		if(bottom.getValue() > 50)
+		if(bottom.getVoltage() < 0.2)
 		{
 			motor.set(-1 / 2);
 		}
