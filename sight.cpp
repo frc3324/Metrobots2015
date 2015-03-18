@@ -52,30 +52,33 @@ vector<Rect> Sight::getTotes() {
     return totes;
 }
 
-vector< pair<float, float> > Sight::getAngles(vector<Rect> rects, float widthmm = 683)
+vector< pair<float, float> > Sight::getInfo(vector<Rect> rects, float widthmm = 683)
 {
-    vector<float> drects;
-    int distance, length, widthpx, width;
+    vector< pair<float, float> > drects;
+    int widthpx;
     float distance, lateral;
     for (Rect rect: rects)
     {
-        distance = (width * focalWidth) / rect.width;
+        distance = (widthmm * focalWidth) / rect.width;
 
         widthpx = (rect.x + .5 * rect.width) - cam.get(3) / 2;
         lateral = widthpx * (rect.width / widthmm);
 
-        drects.push_back(std:);
+        drects.push_back(make_pair(distance, lateral));
     }
     return drects;
 }
 
 Mat Sight::getFrame() {
     Mat frame; cam.read(frame);
+    Rect tote;
     vector<Rect> totes = getTotes();
-    for (Rect tote: totes)
+    Scalar color = Scalar(0, 255, 0);
+    for (int i = 0; i < totes.size(); i++)
     {
-         Scalar color = Scalar(0, 255, 0);
-         rectangle(frame, tote, color, 2, 8, 0);
+        tote = totes.at(i);
+        cout << "Drawing rect " << i << endl;
+        rectangle(frame, tote, color, 2, 8, 0);
     }
     return frame;
 }

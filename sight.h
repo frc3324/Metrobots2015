@@ -20,7 +20,7 @@ public:
     Sight(int, int, int);
     ~Sight();
     vector<Rect> getTotes();
-    vector< pair<float, float> > getAngles(vector<Rect>, float);
+    vector< pair<float, float> > getInfo(vector<Rect>, float);
     Mat getFrame();
 
 private:

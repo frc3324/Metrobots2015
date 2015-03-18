@@ -3,7 +3,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <ctime>
 
-#define VISUAL true
+//#define VISUAL true
 #define AUTO 15
 
 using namespace cv;
@@ -13,24 +13,24 @@ using namespace std;
 
 int main()
 {
-    time_t start = time(0);
-    cout << start;
+    //time_t start = time(0);
+    //cout << start;
     Sight sight(0, 640, 480);
     namedWindow("image", CV_WINDOW_AUTOSIZE);
-    vector<float> angles;
+    vector< pair<float, float> > angles;
 
-    while (difftime(start, time(0)) < 15) //Main loop
+    while (true) //Main loop
     {
-        cout << ((float)clock())/CLOCKS_PER_SEC;
-        if (VISUAL)
-        {
+        cout << "looped";
+        //if (true)
+        //{
             imshow("image", sight.getFrame());
             cvWaitKey(10);
-        }
-        if (!VISUAL)
-        {
-            angles = sight.getAngles(sight.getTotes(), 683);
-        }
+        //}
+        //if (!VISUAL)
+        //{
+        //    angles = sight.getInfo(sight.getTotes(), 683);
+        //}
     }
 
     return 0;
