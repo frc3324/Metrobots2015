@@ -4,7 +4,7 @@
 using namespace cv;
 using namespace std;
 
-Sight::Sight(int camera, int width = 640, int height = 480)
+Sight::Sight(int camera, int width, int height)
 {
     cam = VideoCapture(camera);
     cam.set(3, width);
@@ -32,46 +32,50 @@ Mat Sight::getThresholded()
     return thresholded;
 }
 
-vector<Rect> Sight::getTotes(vector<Vec4i> &hierarchy) {
+vector<Rect> Sight::getTotes() {
     Mat thresholded = getThresholded();
     vector< vector<Point> > contours;
-    findContours(thresholded, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+    vector<Vec4i>* hierarchy;
+    findContours(thresholded, contours, *hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+
 
     Rect rect;
     vector<Rect> totes;
-    for (int i = 0; i < contours.size(); i++)
+    vector<Point> approx;
+    for (vector<Point> contour: contours)
     {
-        if (contourArea(contours.at(i)) > 100)
-            totes.push_back(boundingRect(contours.at(i)));
+        approx.clear();
+        approxPolyDP(contour, approx, 0.02*arcLength(contour, true), true);
+        if (contourArea(contour) > 100 && approx.size() > 10)
+            totes.push_back(boundingRect(contour));
     }
     return totes;
 }
 
-vector<float> Sight::getAngles(vector<Rect> rects, float width)
+vector< pair<float, float> > Sight::getAngles(vector<Rect> rects, float widthmm = 683)
 {
-    vector<float> angles;
-    Rect rect;
+    vector<float> drects;
     int distance, length, widthpx, width;
-    for (int i = 0; i < rects.size(); i++)
+    float distance, lateral;
+    for (Rect rect: rects)
     {
-        rect = rects.at(i);
         distance = (width * focalWidth) / rect.width;
 
         widthpx = (rect.x + .5 * rect.width) - cam.get(3) / 2;
-        width = widthpx * (rect.width / 683);
+        lateral = widthpx * (rect.width / widthmm);
 
-        angl
+        drects.push_back(std:);
     }
+    return drects;
 }
 
 Mat Sight::getFrame() {
     Mat frame; cam.read(frame);
-    vector<Vec4i> hierarchy;
-    vector<Rect> totes = getTotes(hierarchy);
-    for(int i = 0; i < totes.size(); i++)
+    vector<Rect> totes = getTotes();
+    for (Rect tote: totes)
     {
          Scalar color = Scalar(0, 255, 0);
-         drawContours(frame, totes, i, color, 2, 8, hierarchy, 0, Point() );
+         rectangle(frame, tote, color, 2, 8, 0);
     }
     return frame;
 }

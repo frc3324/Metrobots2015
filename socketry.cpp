@@ -62,7 +62,9 @@ int Socketry::send(char* data)
 char* Socketry::receive()
 {
     memset(buffer, 0, 10);
-    if (read(server, buffer, 10) < 0) return "\0";
+    if (read(server, buffer, 10) < 0)
+        return "\0";
+
     return buffer; //Happy ending.
 }
 

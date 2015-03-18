@@ -9,6 +9,7 @@
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <cmath>
 
 using namespace cv;
 using namespace std;
@@ -18,8 +19,8 @@ class Sight
 public:
     Sight(int, int, int);
     ~Sight();
-    vector<RotatedRect> getTotes(vector<Vec4i>&);
-    vector<float> getAngles(vector<RotatedRect>, float width);
+    vector<Rect> getTotes();
+    vector< pair<float, float> > getAngles(vector<Rect>, float);
     Mat getFrame();
 
 private:
