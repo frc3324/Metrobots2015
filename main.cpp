@@ -1,7 +1,7 @@
 #include <iostream>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-#include <ctime>
+//#include <ctime>
 
 //#define VISUAL true
 #define AUTO 15
@@ -17,20 +17,13 @@ int main()
     //cout << start;
     Sight sight(0, 640, 480);
     namedWindow("image", CV_WINDOW_AUTOSIZE);
-    vector< pair<float, float> > angles;
+    //vector< pair<float, float> > toteinfo;
 
     while (true) //Main loop
     {
-        cout << "looped";
-        //if (true)
-        //{
-            imshow("image", sight.getFrame());
-            cvWaitKey(10);
-        //}
-        //if (!VISUAL)
-        //{
-        //    angles = sight.getInfo(sight.getTotes(), 683);
-        //}
+        //cout << "looped\n";
+        imshow("image", sight.getFrame());
+        cvWaitKey(10);
     }
 
     return 0;

@@ -35,9 +35,7 @@ Mat Sight::getThresholded()
 vector<Rect> Sight::getTotes() {
     Mat thresholded = getThresholded();
     vector< vector<Point> > contours;
-    vector<Vec4i>* hierarchy;
-    findContours(thresholded, contours, *hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
-
+    findContours(thresholded, contours, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
 
     Rect rect;
     vector<Rect> totes;
@@ -70,15 +68,11 @@ vector< pair<float, float> > Sight::getInfo(vector<Rect> rects, float widthmm = 
 }
 
 Mat Sight::getFrame() {
+    //cout << "starting getframe\n";
     Mat frame; cam.read(frame);
-    Rect tote;
     vector<Rect> totes = getTotes();
     Scalar color = Scalar(0, 255, 0);
-    for (int i = 0; i < totes.size(); i++)
-    {
-        tote = totes.at(i);
-        cout << "Drawing rect " << i << endl;
+    for (Rect tote: totes)
         rectangle(frame, tote, color, 2, 8, 0);
-    }
-    return frame;
+    return getThresholded();
 }
