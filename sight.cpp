@@ -10,6 +10,8 @@ Sight::Sight(int camera, int width, int height)
     cam.set(3, width);
     cam.set(4, height);
     focalWidth = (3.6 / 3.674) * width;
+
+    FAST(sideImg, imgPoints, 5);
 }
 
 Sight::~Sight()
@@ -74,5 +76,5 @@ Mat Sight::getFrame() {
     Scalar color = Scalar(0, 255, 0);
     for (Rect tote: totes)
         rectangle(frame, tote, color, 2, 8, 0);
-    return getThresholded();
+    return frame;
 }

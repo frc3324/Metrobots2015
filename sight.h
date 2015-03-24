@@ -9,6 +9,7 @@
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/features2d/features2d.hpp>
 #include <cmath>
 
 using namespace cv;
@@ -26,6 +27,9 @@ public:
 private:
     Scalar max = Scalar(37.5, 235, 266);
     Scalar min = Scalar(17.5, 135, 166);
+    Mat sideImg = imread("sideimg.tga");
+    vector<KeyPoint> imgPoints;
+    FastFeatureDetector fast;
     float focalWidth;
     VideoCapture cam;
     Mat getThresholded();
