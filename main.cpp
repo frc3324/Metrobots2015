@@ -16,13 +16,14 @@ int main()
     //time_t start = time(0);
     //cout << start;
     Sight sight(0, 640, 480);
-    namedWindow("image", CV_WINDOW_AUTOSIZE);
+    string name = "mainvindo";
+    namedWindow(name, CV_WINDOW_AUTOSIZE);
     //vector< pair<float, float> > toteinfo;
 
     while (true) //Main loop
     {
         //cout << "looped\n";
-        imshow("image", sight.getFrame());
+        imshow(name, sight.updateFrame());
         cvWaitKey(10);
     }
 

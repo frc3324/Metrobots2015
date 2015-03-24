@@ -22,17 +22,17 @@ public:
     ~Sight();
     vector<Rect> getTotes();
     vector< pair<float, float> > getInfo(vector<Rect>, float);
-    Mat getFrame();
+    Mat updateFrame();
 
 private:
     Scalar max = Scalar(37.5, 235, 266);
     Scalar min = Scalar(17.5, 135, 166);
     Mat sideImg = imread("sideimg.tga");
-    vector<KeyPoint> imgPoints;
+     vector<KeyPoint> basePoints, camPoints;
     FastFeatureDetector fast;
     float focalWidth;
     VideoCapture cam;
-    Mat getThresholded();
+    Mat frame;
 };
 
 
