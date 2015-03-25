@@ -11,7 +11,8 @@ Sight::Sight(int camera, int width, int height)
     cam.set(4, height);
     focalWidth = (3.6 / 3.674) * width;
 
-    fast.detect(sideImg, basePoints);
+    fast.detect(baseImg, basePoints);
+    extractor.compute(baseImg, basePoints, baseDescriptors);
 }
 
 Sight::~Sight()
@@ -19,13 +20,20 @@ Sight::~Sight()
     /* Absolutely nothing. */
 }
 
-vector<Rect> Sight::getTotes() {
-    vector<Rect> totes;
+void Sight::preCompute()
+{
+    cam.read(frame);
     fast.detect(frame, camPoints);
+    extractor.compute(frame, camPoints, camDescriptors);
+}
 
+void Sight::getTotes() {
+    extractor.compute(frame, camPoints, camDescriptors);
 
+    matcher.match(baseDescriptors, camDescriptors, matches);
 
-    return totes;
+    imgMatches.empty();
+    drawMatches(baseImg, basePoints, frame, camPoints, matches, imgMatches);
 }
 
 vector< pair<float, float> > Sight::getInfo(vector<Rect> rects, float widthmm = 683)
@@ -45,14 +53,7 @@ vector< pair<float, float> > Sight::getInfo(vector<Rect> rects, float widthmm = 
     return drects;
 }
 
-Mat Sight::updateFrame() {
-    //cout << "starting getframe\n";
-    cam.read(frame);
-   /*vector<Rect> totes = getTotes();
-    Scalar color = Scalar(0, 255, 0);
-    for (Rect tote: totes)
-        rectangle(frame, tote, color, 2, 8, 0);*/
-    fast.detect(frame, camPoints);
-    drawKeypoints(frame, camPoints, frame);
-    return frame;
+Mat Sight::update() {
+    preCompute();
+    getTotes();
 }
