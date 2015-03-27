@@ -28,7 +28,7 @@ public class LinearLift
 	{
 		if((value > 0 && !top.get()) || (value < 0 && bottom.getVoltage() < 0.2))
 		{
-			motor.set(value/2);
+			motor.set(value / 2);
 		}
 		else
 		{

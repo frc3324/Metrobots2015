@@ -38,7 +38,7 @@ public class Auton
 					break;
 				case 4:
 					Robot.autonLift.set(-1.5);
-					if (Robot.timer.get() > 0.5)
+					if(Robot.timer.get() > 0.5)
 						advanceStep();
 					break;
 				case 5:

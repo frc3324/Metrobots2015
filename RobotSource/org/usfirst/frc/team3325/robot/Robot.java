@@ -27,13 +27,13 @@ public class Robot extends IterativeRobot
 	 */
 
 	public static DriveTrain chassis;
-	// private Robot robot;
-	public static CANTalon fl, bl, fr, br;
-	public static CANTalon liftMotor;
+	public static Talon fl, bl, fr, br;
+	public static Talon liftMotor;
 	public static Talon armMotor;
 	public static DigitalInput armBottom;
-	public static Encoder flEncoder, blEncoder, frEncoder, brEncoder;
-	public static Gyro gyro, tilt;
+	public static Encoder flEncoder, frEncoder;
+	public static Gyro gyro;
+	public static GarageSensor autonToteSensor;
 
 	public static Timer timer;
 
@@ -48,38 +48,33 @@ public class Robot extends IterativeRobot
 
 	public static ArmLift armLift;
 
-	public static GenericHID usbthing;
-
 	public static DriverStation ds;
 
 	public void robotInit()
 	{
-		fl = new CANTalon(4);
-		bl = new CANTalon(3);
-		fr = new CANTalon(2);
-		br = new CANTalon(1);
+		fl = new Talon(4);
+		bl = new Talon(3);
+		fr = new Talon(2);
+		br = new Talon(1);
 
-		liftMotor = new CANTalon(6);
+		liftMotor = new Talon(6);
 		armMotor = new Talon(5);
 
 		armBottom = new DigitalInput(9);
 
 		flEncoder = new Encoder(0, 1);
-		blEncoder = new Encoder(2, 3);
-		frEncoder = new Encoder(4, 5);
-		brEncoder = new Encoder(6, 7);
+		frEncoder = new Encoder(2, 3);
 
 		gyro = new Gyro(0);
-		tilt = new Gyro(1);
 
-		autonBottom = new AnalogInput(2);
+		autonToteSensor = new GarageSensor(1);
+		autonBottom = new AnalogInput(7);
 		autonTop = new DigitalInput(8);
-		autonHasTote = new AnalogInput(3);
 
 		driver = new MetroJS(0);
 		lifterJS = new MetroJS(1);
 
-		chassis = new DriveTrain(fl, bl, fr, br, flEncoder, blEncoder, frEncoder, brEncoder, gyro, tilt);
+		chassis = new DriveTrain(fl, bl, fr, br, flEncoder, frEncoder, gyro);
 		chassis.setInvertedMotors(false, false, true, true);
 		chassis.setDriveType(DriveTrain.MECANUM_DRIVE);
 
@@ -104,12 +99,7 @@ public class Robot extends IterativeRobot
 		timer.start();
 		gyro.reset();
 		chassis.setDriveType(DriveTrain.MECANUM_DRIVE);
-		/*chassis.setHoldAngle(true);
-		chassis.setFieldOriented(true);
-		chassis.setTargetAngle(chassis.getGyro());
-		chassis.resetTilt();
-		chassis.setTargetTilt(chassis.getTilt());*/
-		
+
 		chassis.setHoldAngle(false);
 		chassis.setFieldOriented(false);
 
@@ -131,15 +121,13 @@ public class Robot extends IterativeRobot
 	 */
 	public void teleopInit()
 	{
-		/*if(chassis.getGyro() < 720)
-			chassis.setHoldAngle(true);
-		elsea*/
-			chassis.setHoldAngle(false);
+		/*
+		 * if(chassis.getGyro() < 720) chassis.setHoldAngle(true); else
+		 */
+		chassis.setHoldAngle(false);
 		chassis.setFieldOriented(false);
 		chassis.setDriveType(DriveTrain.MECANUM_DRIVE);
 		chassis.setTargetAngle(chassis.getGyro());
-		chassis.resetTilt();
-		chassis.setTargetTilt(chassis.getTilt());
 
 		driver.prevA = false;
 		driver.toggleA = false;
@@ -150,14 +138,14 @@ public class Robot extends IterativeRobot
 	 */
 	public void teleopPeriodic()
 	{
-		//chassis.setHoldAngle(driver.toggleWhenPressed(MetroJS.BUTTON_A));
+		// chassis.setHoldAngle(driver.toggleWhenPressed(MetroJS.BUTTON_A));
 
-		/*if(driver.toggleWhenPressed(MetroJS.BUTTON_A) && driver.getButton(MetroJS.BUTTON_A))
-		{
-			chassis.setTargetAngle(gyro.getAngle());
-		}*/
+		/*
+		 * if(driver.toggleWhenPressed(MetroJS.BUTTON_A) && driver.getButton(MetroJS.BUTTON_A)) {
+		 * chassis.setTargetAngle(gyro.getAngle()); }
+		 */
 
-		//chassis.setFieldOriented(driver.toggleWhenPressed(MetroJS.BUTTON_X));
+		// chassis.setFieldOriented(driver.toggleWhenPressed(MetroJS.BUTTON_X));
 
 		chassis.drive(driver.getAxis(MetroJS.LEFT_X), driver.getAxis(MetroJS.LEFT_Y), driver.getAxis(MetroJS.RIGHT_X), driver.getAxis(MetroJS.RIGHT_Y));
 
@@ -185,19 +173,16 @@ public class Robot extends IterativeRobot
 			autonLift.set(0);
 		}
 
-		/*chassis.setHoldAngle(driver.toggleWhenPressed(MetroJS.BUTTON_A));
 
-		chassis.setFieldOriented(driver.toggleWhenPressed(MetroJS.BUTTON_X));*/
+		/*
+		 * chassis.setHoldAngle(driver.toggleWhenPressed(MetroJS.BUTTON_A));
+		 * 
+		 * chassis.setFieldOriented(driver.toggleWhenPressed(MetroJS.BUTTON_X));
+		 */
 
 		if(driver.getButton(MetroJS.BUTTON_B))
 		{
 			chassis.resetGyro();
-			chassis.resetTilt();
-		}
-
-		if(Math.abs(tilt.getAngle()) < 0.5)
-		{
-			tilt.reset();
 		}
 
 		printValues();
@@ -222,20 +207,16 @@ public class Robot extends IterativeRobot
 	public void disabledPeriodic()
 	{
 
-		/*chassis.setHoldAngle(driver.toggleWhenPressed(MetroJS.BUTTON_A));
-
-		chassis.setFieldOriented(driver.toggleWhenPressed(MetroJS.BUTTON_X));*/
+		/*
+		 * chassis.setHoldAngle(driver.toggleWhenPressed(MetroJS.BUTTON_A));
+		 * 
+		 * chassis.setFieldOriented(driver.toggleWhenPressed(MetroJS.BUTTON_X));
+		 */
 
 		if(driver.getButton(MetroJS.BUTTON_B))
 		{
 			chassis.resetGyro();
-			chassis.resetTilt();
 		}
-
-		/*if(Math.abs(tilt.getAngle()) < 0.5)
-		{
-			tilt.reset();
-		}*/
 
 		if(driver.getButton(MetroJS.BUTTON_Y))
 		{
@@ -252,23 +233,17 @@ public class Robot extends IterativeRobot
 		SmartDashboard.putBoolean("Hold Angle", chassis.isHoldAngle());
 		SmartDashboard.putBoolean("Field Oriented", chassis.isFieldOriented());
 		SmartDashboard.putNumber("Gyro Angle", chassis.getGyro());
-		SmartDashboard.putNumber("Tilt", tilt.getAngle());
-
-		SmartDashboard.putNumber("autonswitch ", autonBottom.getVoltage());
-		SmartDashboard.putBoolean("autonTop", autonTop.get());
 
 		SmartDashboard.putString("autonType", Auton.getAutonType());
 
-		SmartDashboard.putBoolean("armswitch", armBottom.get());
-		SmartDashboard.putNumber("autonBottom", autonBottom.getVoltage());
-		SmartDashboard.putBoolean("autonTop", autonTop.get());
-		
 		SmartDashboard.putNumber("lifterdpad", lifterJS.getDPadY());
-		
-		SmartDashboard.putNumber("bottombump", autonHasTote.getVoltage());
-		
+
 		SmartDashboard.putNumber("auytonCount", Auton.autonCount);
 
+		SmartDashboard.putNumber("garageDoor thingy", autonToteSensor.getVoltage());
+		SmartDashboard.putBoolean("garage is blocked", autonToteSensor.beamBroken());
+		SmartDashboard.putBoolean("Has Tote", autonToteSensor.hasTote());
+		SmartDashboard.putBoolean("beam connected", autonToteSensor.beamConnected());
 	}
 
 }
