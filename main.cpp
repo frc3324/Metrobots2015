@@ -16,6 +16,7 @@ int main()
 {
     //time_t start = time(0);
     //cout << start;
+    //initModule_nonfree();
     Sight sight(0, 640, 480);
     sight.update();
     string name = "mainvindo";

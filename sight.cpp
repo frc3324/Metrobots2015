@@ -10,9 +10,11 @@ Sight::Sight(int camera, int width, int height)
     cam.set(3, width);
     cam.set(4, height);
     focalWidth = (3.6 / 3.674) * width;
+    baseImg = imread("/home/myself/Code/Vision2015/baseimg.png", 0);
 
-    fast.detect(baseImg, basePoints);
+    detector.detect(baseImg, basePoints);
     extractor.compute(baseImg, basePoints, baseDescriptors);
+    if (baseDescriptors.empty()) exit(-1);
 }
 
 Sight::~Sight()
@@ -23,16 +25,13 @@ Sight::~Sight()
 void Sight::preCompute()
 {
     cam.read(frame);
-    fast.detect(frame, camPoints);
+    detector.detect(frame, camPoints);
     extractor.compute(frame, camPoints, camDescriptors);
 }
 
 void Sight::getTotes() {
     extractor.compute(frame, camPoints, camDescriptors);
-
     matcher.match(baseDescriptors, camDescriptors, matches);
-
-    imgMatches.empty();
     drawMatches(baseImg, basePoints, frame, camPoints, matches, imgMatches);
 }
 
