@@ -39,9 +39,12 @@ vector<RotatedRect> Sight::getTotes(vector<Vec4i> &hierarchy) {
 
     Rect rect;
     vector<RotatedRect> totes;
+    vector<Point> approx;
     for (int i = 0; i < contours.size(); i++)
     {
-        if (contourArea(contours.at(i)) > 200)
+        approx.clear();
+        approxPolyDP(contours.at(i), approx, 0.02*arcLength(contours.at(i), true), true);
+        if (contourArea(contours.at(i)) > 10000 && 10 < approx.size() < 11)
             totes.push_back(minAreaRect(contours.at(i)));
     }
     return totes;

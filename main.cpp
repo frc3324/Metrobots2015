@@ -14,20 +14,15 @@ using namespace std;
 
 int main()
 {
-    //time_t start = time(0);
-    //cout << start;
-    //initModule_nonfree();
     Sight sight(0, 640, 480);
-    sight.update();
     string name = "mainvindo";
     namedWindow(name, CV_WINDOW_AUTOSIZE);
     //vector< pair<float, float> > toteinfo;
 
     while (true) //Main loop
     {
-        sight.update();
         imshow(name, sight.getFrame());
-        cvWaitKey(0);
+        cvWaitKey(1);
     }
 
     return 0;
