@@ -1,6 +1,10 @@
- #include "socketry.h"
+#include "socketry.h"
 
-using namespace socketry;
+namespace socketry
+{
+
+char CLIENT = 1;
+char SERVER = 2;
 
 Socketry::Socketry(char netType)
 {
@@ -53,9 +57,9 @@ int Socketry::serve(int port, int queue = 5, bool broadcast = false)
     return 0; //Happy ending.
 }
 
-int Socketry::send(char* data)
+int Socketry::transmit(char* data)
 {
-    if (write(server, data, strlen(data)) < 0) return -1;
+    if (send(server, data, strlen(data), MSG_NOSIGNAL) < 0) return -1;
     return 0; //Happy ending.
 }
 
@@ -71,6 +75,8 @@ char* Socketry::receive()
 void Socketry::end()
 {
     close(server); close(client); //Happy endings for everyone.
+}
+
 }
 
 void error(char* msg)

@@ -21,43 +21,55 @@ Mat Sight::getThresholded()
     Mat frame; cam.read(frame);
     Mat hsv; cvtColor(frame, hsv, COLOR_BGR2HSV);
     Mat thresholded;
+    Size erodeVal(10, 10);
 
     inRange(hsv, min, max, thresholded);
 
-    erode(thresholded, thresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-    dilate(thresholded, thresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-    dilate(thresholded, thresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-    erode(thresholded, thresholded, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
+    erode(thresholded, thresholded, getStructuringElement(MORPH_ELLIPSE, erodeVal));
+    dilate(thresholded, thresholded, getStructuringElement(MORPH_ELLIPSE, erodeVal));
+    dilate(thresholded, thresholded, getStructuringElement(MORPH_ELLIPSE, erodeVal));
+    erode(thresholded, thresholded, getStructuringElement(MORPH_ELLIPSE, erodeVal));
 
     return thresholded;
 }
 
-vector<RotatedRect> Sight::getTotes(vector<Vec4i> &hierarchy) {
+void Sight::getTote() {
     Mat thresholded = getThresholded();
     vector< vector<Point> > contours;
-    findContours(thresholded, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+    findContours(thresholded, contours, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 
     Rect rect;
-    vector<RotatedRect> totes;
-    vector<Point> approx;
+    int size = 0;
+    //vector<Point> approx;
     for (int i = 0; i < contours.size(); i++)
     {
-        approx.clear();
-        approxPolyDP(contours.at(i), approx, 0.02*arcLength(contours.at(i), true), true);
-        if (contourArea(contours.at(i)) > 10000 && 10 < approx.size() < 11)
-            totes.push_back(minAreaRect(contours.at(i)));
+        //approx.clear();
+        //approxPolyDP(contours.at(i), approx, 0.02*arcLength(contours.at(i), true), true);
+        if (contourArea(contours.at(i)) > 1000 /* && 10 < approx.size() < 11 */ ) {
+            //size = contourArea(contours.at(i));
+            tote = minAreaRect(contours.at(i));
+        }
     }
-    return totes;
+}
+
+void Sight::getInfo() {
+    float x = tote.center.x;
+    int width = cam.get(3);
+    int threshold = 7;
+
+    if (x < width / 2 - threshold) angle = "l";
+    else if (x > width / 2 + threshold) angle = "r";
+    else angle = "g";
+}
+
+void Sight::update() {
+    cam.read(frame);
+    getTote();
+    getInfo();
 }
 
 Mat Sight::getFrame() {
-    Mat frame; cam.read(frame);
-    vector<Vec4i> hierarchy;
-    vector<RotatedRect> totes = getTotes(hierarchy);
     Scalar color = Scalar(255, 0, 0);
-    for(int i = 0; i < totes.size(); i++)
-    {
-         ellipse(frame, totes.at(i), color, 2);
-    }
+    ellipse(frame, tote, color, 2);
     return frame;
 }

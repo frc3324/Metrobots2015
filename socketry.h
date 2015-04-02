@@ -20,8 +20,8 @@ using namespace std;
 namespace socketry
 {
 
-char CLIENT = 1;
-char SERVER = 2;
+extern char CLIENT;
+extern char SERVER;
 
 class Socketry
 {
@@ -30,7 +30,7 @@ public:
     ~Socketry();
     int link(char*, int);
     int serve(int, int, bool);
-    int send(char*);
+    int transmit(char*);
     char* receive();
     void end();
 
@@ -45,6 +45,6 @@ private:
 
 }
 
-void error(char*);
+extern void error(char*);
 
 #endif // TALKATIVE_H

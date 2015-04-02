@@ -18,13 +18,18 @@ class Sight
 public:
     Sight(int, int, int);
     ~Sight();
-    vector<RotatedRect> getTotes(vector<Vec4i>&);
+    void getTote();
+    void update();
+    void getInfo();
     Mat getFrame();
+    RotatedRect tote;
+    char* angle = "g";
 
 private:
     Scalar max = Scalar(35, 255, 246);
-    Scalar min = Scalar(19, 147, 180);
+    Scalar min = Scalar(15, 147, 180);
     VideoCapture cam;
+    Mat frame;
     Mat getThresholded();
 };
 
