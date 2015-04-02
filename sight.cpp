@@ -6,9 +6,11 @@ using namespace std;
 
 Sight::Sight(int camera, int width = 640, int height = 480)
 {
-    cam = VideoCapture(camera);
-    cam.set(3, width);
-    cam.set(4, height);
+    config = (RASPIVID_CONFIG*) malloc(sizeof(RASPIVID_CONFIG));
+    config->width = width; config->height=height;
+    config->bitrate = 0; config->framerate = 0; config->monochrome = 0;
+    
+    cam = raspiCamCvCreateCameraCapture2(0, config);
 }
 
 Sight::~Sight()
@@ -18,7 +20,6 @@ Sight::~Sight()
 
 Mat Sight::getThresholded()
 {
-    Mat frame; cam.read(frame);
     Mat hsv; cvtColor(frame, hsv, COLOR_BGR2HSV);
     Mat thresholded;
     Size erodeVal(10, 10);
@@ -54,7 +55,7 @@ void Sight::getTote() {
 
 void Sight::getInfo() {
     float x = tote.center.x;
-    int width = cam.get(3);
+    int width = config->width;
     int threshold = 7;
 
     if (x < width / 2 - threshold) angle = "l";
@@ -63,7 +64,7 @@ void Sight::getInfo() {
 }
 
 void Sight::update() {
-    cam.read(frame);
+    frame = raspiCamCvQueryFrame(cam);
     getTote();
     getInfo();
 }

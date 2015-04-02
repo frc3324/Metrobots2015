@@ -9,6 +9,7 @@
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <RaspiCamCV.h>
 
 using namespace cv;
 using namespace std;
@@ -28,7 +29,8 @@ public:
 private:
     Scalar max = Scalar(35, 255, 246);
     Scalar min = Scalar(15, 147, 180);
-    VideoCapture cam;
+    RASPIVID_CONFIG* config;
+    RaspiCamCvCapture* cam;
     Mat frame;
     Mat getThresholded();
 };

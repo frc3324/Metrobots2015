@@ -7,7 +7,7 @@ ADD_DEFINITIONS( -std=c++11 )
 
 SET(RASPICAM_CV $ENV{HOME}/git/robidouille/raspicam_cv)
 SET(USERLAND $ENV{HOME}/git/raspberrypi/userland)
-include_directories(${RASPICAM_CV})
+include_directories(include ${RASPICAM_CV})
 
 SET(MMAL_LIBS
     ${USERLAND}/build/lib/libmmal_core.so
@@ -18,10 +18,11 @@ SET(BCM_LIBS ${USERLAND}/build/lib/libbcm_host.so)
 SET(GLES_LIBS ${USERLAND}/build/lib/libGLESv2.so)
 SET(EGL_LIBS ${USERLAND}/build/lib/libEGL.so)
 SET(DISPLAY_CAMERA_LIBS
-    ${RASPICAM_CV}/libraspicamcv.a
+    ${RASPICAM_CV}/libraspicamcv.so
     ${MMAL_LIBS} ${BCM_LIBS} ${OpenCV_LIBS})
 
 aux_source_directory(. SRC_LIST)
 add_executable(${PROJECT_NAME} ${SRC_LIST} /home/pi/git/robidouille/raspicam_cv/RaspiCamCV.h)
 target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
+target_link_libraries( ${PROJECT_NAME} ${DISPLAY_CAMERA_LIBS} )
 

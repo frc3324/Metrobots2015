@@ -1,11 +1,10 @@
 #include <iostream>
-#include "RaspiCamCV.h"
 //#include <opencv2/core/core.hpp>
 //#include <opencv2/highgui/highgui.hpp>
 //#include <opencv2/imgproc/imgproc.hpp>
 //#include <ctime>
 
-#define GUI
+//#define GUI
 #define AUTO 15
 
 #include "sight.h"
@@ -20,22 +19,22 @@ int main()
     cout << "program started";
     Socketry socket(CLIENT);
     socket.link("<broadcast>", 8080);
-    Sight sight(0, 640, 480);
-    #ifdef GUI
+    Sight sight(0, 320, 240);
+    /*#ifdef GUI
         string name = "mainvindo";
         namedWindow(name, CV_WINDOW_AUTOSIZE);
-    #endif
+    #endif*/
 
     while (true) //Main loop
     {
         sight.update();
-        cout << sight.angle;
+        cout << sight.angle << "\n";
         socket.transmit(sight.angle);
-        #ifdef GUI
+        /*#ifdef GUI
             cout << "\tdrawing gui\n";
             imshow(name, sight.getFrame());
             cvWaitKey(1);
-        #endif
+        #endif*/
     }
 
     return 0;
