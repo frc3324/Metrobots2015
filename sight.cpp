@@ -38,25 +38,29 @@ void Sight::getTote() {
     Mat thresholded = getThresholded();
     vector< vector<Point> > contours;
     findContours(thresholded, contours, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
-
+    if (contours.size() == 0) return;
     Rect rect;
-    int size = 0;
+    int size, idx;
     //vector<Point> approx;
     for (int i = 0; i < contours.size(); i++)
     {
         //approx.clear();
         //approxPolyDP(contours.at(i), approx, 0.02*arcLength(contours.at(i), true), true);
-        if (contourArea(contours.at(i)) > 1000 /* && 10 < approx.size() < 11 */ ) {
-            //size = contourArea(contours.at(i));
+        if (contourArea(contours.at(i)) > size) {
+            //size = contourArea(contours.at(i)); idx = i;
+            cout << "tote found";
             tote = minAreaRect(contours.at(i));
         }
     }
+    //if (!(idx <= 0)) tote = minAreaRect(contours.at(idx));
 }
 
 void Sight::getInfo() {
+    Size2f empty(0, 0);
+    if (tote.size == empty) return;
     float x = tote.center.x;
     int width = config->width;
-    int threshold = 7;
+    int threshold = 3;
 
     if (x < width / 2 - threshold) angle = "l";
     else if (x > width / 2 + threshold) angle = "r";
@@ -64,13 +68,17 @@ void Sight::getInfo() {
 }
 
 void Sight::update() {
+    //cout << "getting new frame\t";
     frame = raspiCamCvQueryFrame(cam);
+    //cout << "finding tote\t";
     getTote();
+    //cout << "analyzing tote\t";
     getInfo();
 }
 
 Mat Sight::getFrame() {
+    Mat out(frame);
     Scalar color = Scalar(255, 0, 0);
-    ellipse(frame, tote, color, 2);
-    return frame;
+    ellipse(out, tote, color, 2);
+    return getThresholded();
 }

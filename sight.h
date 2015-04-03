@@ -24,7 +24,7 @@ public:
     void getInfo();
     Mat getFrame();
     RotatedRect tote;
-    char* angle = "g";
+    char* angle = "u";
 
 private:
     Scalar max = Scalar(35, 255, 246);

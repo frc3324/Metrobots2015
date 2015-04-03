@@ -23,6 +23,4 @@ SET(DISPLAY_CAMERA_LIBS
 
 aux_source_directory(. SRC_LIST)
 add_executable(${PROJECT_NAME} ${SRC_LIST} /home/pi/git/robidouille/raspicam_cv/RaspiCamCV.h)
-target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
-target_link_libraries( ${PROJECT_NAME} ${DISPLAY_CAMERA_LIBS} )
-
+target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} ${DISPLAY_CAMERA_LIBS} -lwiringPi )
