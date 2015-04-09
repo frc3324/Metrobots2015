@@ -7,22 +7,26 @@ public class ArmLift
 {
 	public static SpeedController motor;
 
-	public static DigitalInput button;
+	public static DigitalInput buttonT, buttonB;
 
-	public ArmLift(SpeedController motor_, DigitalInput button_)
+	public ArmLift(SpeedController motor_, DigitalInput buttonTop_, DigitalInput buttonBottom_)
 	{
 		motor = motor_;
-		button = button_;
+		buttonT = buttonTop_;
+		buttonB = buttonBottom_;
 	}
 
 	public static void up()
 	{
-		motor.set(-1);
+		if(!buttonB.get())
+		{
+			motor.set(-1);
+		}
 	}
 
 	public static void down()
 	{
-		if(!button.get())
+		if(buttonT.get())
 		{
 			motor.set(1);
 		}
@@ -30,11 +34,11 @@ public class ArmLift
 
 	public void set(double speed)
 	{
-		if(speed < 0 && button.get())
+		if(speed < 0 && buttonT.get())
 		{
 			motor.set(-speed);
 		}
-		else if(speed > 0)
+		else if(speed > 0 && !buttonB.get())
 		{
 			motor.set(-speed);
 		}

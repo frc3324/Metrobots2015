@@ -10,7 +10,7 @@ public class GarageSensor
 	public GarageSensor(int AnalogPort)
 	{
 		input = new AnalogInput(AnalogPort);
-		deadband = 3.9;
+		deadband = 3.75;
 	}
 
 	public boolean beamBroken()

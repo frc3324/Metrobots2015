@@ -3,7 +3,7 @@ package org.usfirst.frc.team3325.robot;
 public class Auton
 {
 
-	public static String autonType = "None";
+	public static String autonType = "3-Tote";
 
 	public static int autonCount = 0;
 
@@ -14,60 +14,50 @@ public class Auton
 			switch(autonCount)
 			{
 				case 0:
-					Robot.chassis.mecanumDrive(-0.25, 0, 0);
-					Robot.autonLift.set(-0.75);
-					if(Robot.autonBottom.getVoltage() > 0.1 && Robot.timer.get() > 0.5)
+					Robot.chassis.mecanumDrive(-0.2, 0, 0);
+					Robot.autonLift.set(-1);
+					if(Robot.autonBottom.get() && Robot.timer.get() > 0.5)
 						advanceStep();
 					break;
 				case 1:
-					Robot.autonLift.set(1.5);
-					if(Robot.autonTop.get() && (Robot.autonHasTote.getVoltage() < 0.01) && (Robot.timer.get() > 0.5))
+					Robot.autonLift.set(1);
+					if(Robot.autonTop.get() && Robot.autonGarage.hasTote() && (Robot.timer.get() > 0.5))
 						advanceStep();
 					break;
 				case 2:
-					Robot.autonLift.set(-1.5);
-					if(Robot.autonBottom.getVoltage() > 0.1)
+					Robot.autonLift.set(-1);
+					if(Robot.autonBottom.get())
 						advanceStep();
 					break;
 				case 3:
-					Robot.autonLift.set(1.5);
-					if(Robot.autonTop.get() && (Robot.autonHasTote.getVoltage() < 0.01) && (Robot.timer.get() > 0.5))
+					Robot.autonLift.set(1);
+					if(Robot.autonTop.get() && Robot.autonGarage.hasTote() && (Robot.timer.get() > 0.5))
 					{
 						advanceStep();
 					}
 					break;
 				case 4:
-					Robot.autonLift.set(-1.5);
-					if(Robot.timer.get() > 0.5)
-						advanceStep();
-					break;
-				case 5:
-					Robot.chassis.mecanumDrive(0, 0, 1);
 					if(Robot.timer.get() > 1)
 					{
 						advanceStep();
 					}
 					break;
-				case 6:
-					Robot.chassis.mecanumDrive(0.25, 0, 0);
-					if(Robot.timer.get() > 1.5)
+				case 5:
+					Robot.autonLift.set(-1);
+					if(Robot.timer.get() > 0.25 && Robot.autonBottom.get())
+					{
 						advanceStep();
+						Robot.chassis.resetGyro();
+						Robot.autonLift.set(0);
+					}
 					break;
-				case 7:
-					Robot.chassis.mecanumDrive(0, 0, 0);
-					if(Robot.timer.get() > 0.25)
+				case 6:
+					Robot.chassis.drive(0, 0, 0, 0);
+					Robot.chassis.setTargetAngle(90);
+					if((Robot.chassis.targetAngle - Robot.chassis.getGyro()) > 5 && Robot.timer.get() > 0.5)
 					{
 						advanceStep();
 					}
-					break;
-				case 8:
-					Robot.chassis.mecanumDrive(-0.25, 0, 0);
-					if(Robot.timer.get() > 0.5)
-						advanceStep();
-					break;
-				case 9:
-					Robot.chassis.mecanumDrive(0, 0, 0);
-					advanceStep();
 					break;
 			}
 		}
@@ -133,6 +123,51 @@ public class Auton
 					break;
 			}
 		}
+		else if(autonType == "F-Tote")
+		{
+			switch(autonCount)
+			{
+				case 0:
+					Robot.chassis.mecanumDrive(0.5, 0, 0);
+					if(Robot.timer.get() > 2.5)
+					{
+						advanceStep();
+					}
+					break;
+				case 1:
+					Robot.chassis.mecanumDrive(0, 0, 0);
+					advanceStep();
+					break;
+			}
+		}
+		else if(autonType == "BinBackward") {
+
+			switch(autonCount)
+			{
+				case 0:
+					//Robot.armLift.set(1);
+					Robot.autonLift.set(1);
+					if (Robot.timer.get() > 0.5) {
+						advanceStep();
+					}
+				case 1:
+					Robot.chassis.mecanumDrive(0, 0, -1);
+					if(Robot.timer.get() > 1)
+					{
+						advanceStep();
+					}
+					break;
+				case 2:
+					Robot.armLift.set(0);
+					Robot.chassis.mecanumDrive(1, 0, 0);
+					if (Robot.timer.get() > 1.5){
+						advanceStep();
+					}
+					break;
+				case 3:
+					Robot.chassis.mecanumDrive(0,0,0);
+			}
+		}
 		else
 		{
 
@@ -171,6 +206,10 @@ public class Auton
 			autonType = "Backward";
 		else if(autonType == "Backward")
 			autonType = "None";
+		else if(autonType == "None")
+			autonType = "F-Tote";
+		else if(autonType == "F-Tote")
+			autonType = "BinBackward";
 		else
 			autonType = "3-Tote";
 	}
@@ -180,5 +219,20 @@ public class Auton
 		autonCount++;
 		Robot.timer.reset();
 		Robot.timer.start();
+	}
+
+	private static void CFK()
+	{
+		// if (Robot.autonKill)
+	}
+
+	private static void kill()
+	{
+		while(Robot.ds.isAutonomous())
+		{
+			Robot.chassis.drive(0, 0, 0, 0);
+			Robot.autonLift.set(0);
+			Robot.armLift.set(0);
+		}
 	}
 }

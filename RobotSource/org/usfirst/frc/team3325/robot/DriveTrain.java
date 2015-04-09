@@ -11,6 +11,7 @@ public class DriveTrain
 	public static Encoder flEncoder, frEncoder;// , frEncoder, brEncoder;
 
 	public static Gyro gyro;// , tilt;
+	public static double gyroHoldSensitivity;
 
 	public static boolean isFieldOriented, isHoldAngle, isSlowDrive;
 
@@ -24,20 +25,20 @@ public class DriveTrain
 	public static final int MECANUM_DRIVE = 1;
 	public static final int ARCADE_DRIVE = 2;
 
-	public DriveTrain(SpeedController fl_, SpeedController bl_, SpeedController fr_, SpeedController br_, Encoder flEncoder_, Encoder frEncoder_, Gyro gyro_)
+	public DriveTrain(SpeedController fl_, SpeedController bl_, SpeedController fr_, SpeedController br_, /*Encoder flEncoder_, Encoder frEncoder_,*/ Gyro gyro_)
 	{
 		fl = fl_;
 		bl = bl_;
 		fr = fr_;
 		br = br_;
 
-		flEncoder = flEncoder_;
-		frEncoder = frEncoder_;
+		//flEncoder = flEncoder_;
+		//frEncoder = frEncoder_;
 		// frEncoder = frEncoder_;
 		// brEncoder = brEncoder_;
 
-		flEncoder.reset();
-		frEncoder.reset();
+		//flEncoder.reset();
+		//frEncoder.reset();
 		// frEncoder.reset();
 		// brEncoder.reset();
 
@@ -46,6 +47,7 @@ public class DriveTrain
 
 		isFieldOriented = false;
 		isHoldAngle = false;
+		gyroHoldSensitivity = 20;
 
 		targetAngle = 0;
 
@@ -83,7 +85,7 @@ public class DriveTrain
 		if(isHoldAngle)
 		{
 
-			turn = turn + ((targetAngle - gyro.getAngle()) / 20);
+			turn = turn + ((targetAngle - gyro.getAngle()) / gyroHoldSensitivity);
 
 		}
 
@@ -93,7 +95,7 @@ public class DriveTrain
 		 * 50); } }
 		 */
 
-		turn = turn / 3;
+		turn = turn / -3;
 		if(isSlowDrive)
 		{
 			fl.set((y + x + turn) * flInv * 0.6);
@@ -190,6 +192,11 @@ public class DriveTrain
 	public void resetGyro()
 	{
 		gyro.reset();
+	}
+
+	public void setGyroHoldSensitivity(double value)
+	{
+		gyroHoldSensitivity = value;
 	}
 
 	public void setTargetAngle(double angle)

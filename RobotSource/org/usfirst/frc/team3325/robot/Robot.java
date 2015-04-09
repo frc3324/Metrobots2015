@@ -2,10 +2,10 @@ package org.usfirst.frc.team3325.robot;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Talon;
@@ -30,10 +30,13 @@ public class Robot extends IterativeRobot
 	public static Talon fl, bl, fr, br;
 	public static Talon liftMotor;
 	public static Talon armMotor;
-	public static DigitalInput armBottom;
-	public static Encoder flEncoder, frEncoder;
+	public static DigitalInput armBottom, armTop;
+	//public static Encoder flEncoder, frEncoder;
 	public static Gyro gyro;
-	public static GarageSensor autonToteSensor;
+	public static DigitalInput autonToteSensor;
+	
+	public static Compressor compressor;
+	public static DoubleSolenoid piston;
 
 	public static Timer timer;
 
@@ -42,9 +45,11 @@ public class Robot extends IterativeRobot
 
 	public static LinearLift autonLift;
 
-	public static AnalogInput autonBottom;
+	public static DigitalInput autonBottom;
 	public static DigitalInput autonTop;
 	public static AnalogInput autonHasTote;
+
+	public static GarageSensor autonGarage;
 
 	public static ArmLift armLift;
 
@@ -52,35 +57,43 @@ public class Robot extends IterativeRobot
 
 	public void robotInit()
 	{
-		fl = new Talon(4);
-		bl = new Talon(3);
-		fr = new Talon(2);
-		br = new Talon(1);
+		fl = new Talon(1);
+		bl = new Talon(2);
+		fr = new Talon(3);
+		br = new Talon(4);
 
 		liftMotor = new Talon(6);
 		armMotor = new Talon(5);
 
-		armBottom = new DigitalInput(9);
+		armBottom = new DigitalInput(6);
+		armTop = new DigitalInput(5);
+		
+		compressor = new Compressor(0);
+		compressor.setClosedLoopControl(true);
+		piston = new DoubleSolenoid(2, 3);
+		piston.set(DoubleSolenoid.Value.kForward);
 
-		flEncoder = new Encoder(0, 1);
-		frEncoder = new Encoder(2, 3);
+		// flEncoder = new Encoder(0, 1);
+		// frEncoder = new Encoder(2, 3);
 
 		gyro = new Gyro(0);
 
-		autonToteSensor = new GarageSensor(1);
-		autonBottom = new AnalogInput(7);
+		autonBottom = new DigitalInput(7);
 		autonTop = new DigitalInput(8);
+		autonToteSensor = new DigitalInput(9);
+
+		autonGarage = new GarageSensor(1);
 
 		driver = new MetroJS(0);
 		lifterJS = new MetroJS(1);
 
-		chassis = new DriveTrain(fl, bl, fr, br, flEncoder, frEncoder, gyro);
+		chassis = new DriveTrain(fl, bl, fr, br, /*flEncoder, frEncoder,*/ gyro);
 		chassis.setInvertedMotors(false, false, true, true);
 		chassis.setDriveType(DriveTrain.MECANUM_DRIVE);
 
 		autonLift = new LinearLift(liftMotor, autonBottom, autonTop);
 
-		armLift = new ArmLift(armMotor, armBottom);
+		armLift = new ArmLift(armMotor, armBottom, armTop);
 
 		timer = new Timer();
 		timer.start();
@@ -101,7 +114,9 @@ public class Robot extends IterativeRobot
 		chassis.setDriveType(DriveTrain.MECANUM_DRIVE);
 
 		chassis.setHoldAngle(false);
+		chassis.setTargetAngle(0);
 		chassis.setFieldOriented(false);
+		chassis.setGyroHoldSensitivity(2);
 
 		Auton.setAutonCount(0);
 
@@ -126,6 +141,7 @@ public class Robot extends IterativeRobot
 		 */
 		chassis.setHoldAngle(false);
 		chassis.setFieldOriented(false);
+		chassis.setGyroHoldSensitivity(20);
 		chassis.setDriveType(DriveTrain.MECANUM_DRIVE);
 		chassis.setTargetAngle(chassis.getGyro());
 
@@ -146,8 +162,13 @@ public class Robot extends IterativeRobot
 		 */
 
 		// chassis.setFieldOriented(driver.toggleWhenPressed(MetroJS.BUTTON_X));
+		
+		double lx = driver.getAxis(MetroJS.LEFT_X);
+		double ly = driver.getAxis(MetroJS.LEFT_Y) + (driver.getDPadY() / 3);
+		double rx = driver.getAxis(MetroJS.RIGHT_X) + (lifterJS.getButton(MetroJS.BUTTON_X) ? -0.5 : 0) + (lifterJS.getButton(MetroJS.BUTTON_B) ? 0.5 : 0);
+		double ry = driver.getAxis(MetroJS.RIGHT_Y);
 
-		chassis.drive(driver.getAxis(MetroJS.LEFT_X), driver.getAxis(MetroJS.LEFT_Y), driver.getAxis(MetroJS.RIGHT_X), driver.getAxis(MetroJS.RIGHT_Y));
+		chassis.drive(lx, ly, rx, ry);
 
 		if(driver.getButton(MetroJS.LB) || driver.getButton(MetroJS.RB))
 		{
@@ -172,6 +193,8 @@ public class Robot extends IterativeRobot
 		{
 			autonLift.set(0);
 		}
+		
+		//piston.set(lifterJS.getButton(MetroJS.BUTTON_A) ? DoubleSolenoid.Value.kForward : lifterJS.getButton(MetroJS.BUTTON_Y) ? DoubleSolenoid.Value.kReverse : DoubleSolenoid.Value.kOff);
 
 
 		/*
@@ -218,7 +241,7 @@ public class Robot extends IterativeRobot
 			chassis.resetGyro();
 		}
 
-		if(driver.getButton(MetroJS.BUTTON_Y))
+		if(driver.getButton(MetroJS.BUTTON_Y) && !driver.prevY)
 		{
 			Auton.cycleType();
 		}
@@ -240,10 +263,17 @@ public class Robot extends IterativeRobot
 
 		SmartDashboard.putNumber("auytonCount", Auton.autonCount);
 
-		SmartDashboard.putNumber("garageDoor thingy", autonToteSensor.getVoltage());
-		SmartDashboard.putBoolean("garage is blocked", autonToteSensor.beamBroken());
-		SmartDashboard.putBoolean("Has Tote", autonToteSensor.hasTote());
-		SmartDashboard.putBoolean("beam connected", autonToteSensor.beamConnected());
+		SmartDashboard.putBoolean("autonBottom", autonBottom.get());
+		SmartDashboard.putBoolean("autonTop", autonTop.get());
+		SmartDashboard.putBoolean("has tote", autonToteSensor.get());
+
+
+		/*
+		 * SmartDashboard.putNumber("garageDoor thingy", autonToteSensor.getVoltage());
+		 * SmartDashboard.putBoolean("garage is blocked", autonToteSensor.beamBroken());
+		 * SmartDashboard.putBoolean("Has Tote", autonToteSensor.hasTote());
+		 * SmartDashboard.putBoolean("beam connected", autonToteSensor.beamConnected());
+		 */
 	}
 
 }
