@@ -1,5 +1,6 @@
 package org.usfirst.frc.team3325.robot;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.SpeedController;
@@ -8,10 +9,9 @@ public class DriveTrain
 {
 	public static SpeedController fl, bl, fr, br;
 
-	public static Encoder flEncoder, frEncoder;// , frEncoder, brEncoder;
+	public static Encoder flEncoder, blEncoder, frEncoder, brEncoder;
 
-	public static Gyro gyro;// , tilt;
-	public static double gyroHoldSensitivity;
+	public static Gyro gyro, tilt;
 
 	public static boolean isFieldOriented, isHoldAngle, isSlowDrive;
 
@@ -25,31 +25,31 @@ public class DriveTrain
 	public static final int MECANUM_DRIVE = 1;
 	public static final int ARCADE_DRIVE = 2;
 
-	public DriveTrain(SpeedController fl_, SpeedController bl_, SpeedController fr_, SpeedController br_, /*Encoder flEncoder_, Encoder frEncoder_,*/ Gyro gyro_)
+	public DriveTrain(SpeedController fl_, SpeedController bl_, SpeedController fr_, SpeedController br_, Encoder flEncoder_, Encoder blEncoder_, Encoder frEncoder_, Encoder brEncoder_, Gyro gyro_, Gyro tilt_)
 	{
 		fl = fl_;
 		bl = bl_;
 		fr = fr_;
 		br = br_;
 
-		//flEncoder = flEncoder_;
-		//frEncoder = frEncoder_;
-		// frEncoder = frEncoder_;
-		// brEncoder = brEncoder_;
+		flEncoder = flEncoder_;
+		blEncoder = blEncoder_;
+		frEncoder = frEncoder_;
+		brEncoder = brEncoder_;
 
-		//flEncoder.reset();
-		//frEncoder.reset();
-		// frEncoder.reset();
-		// brEncoder.reset();
+		flEncoder.reset();
+		blEncoder.reset();
+		frEncoder.reset();
+		brEncoder.reset();
 
 		gyro = gyro_;
-		// tilt = tilt_;
+		tilt = tilt_;
 
 		isFieldOriented = false;
 		isHoldAngle = false;
-		gyroHoldSensitivity = 20;
 
 		targetAngle = 0;
+		targetTilt = 0;
 
 		frInv = 1;
 		brInv = 1;
@@ -61,10 +61,10 @@ public class DriveTrain
 
 	public static void tankDrive(double left, double right)
 	{
-		fl.set(left * frInv);
-		bl.set(left * brInv);
-		fr.set(right * flInv);
-		br.set(right * blInv);
+		fl.set(-left * frInv);
+		bl.set(-left * brInv);
+		fr.set(-right * flInv);
+		br.set(-right * blInv);
 	}
 
 	public void mecanumDrive(double y, double x, double turn)
@@ -85,30 +85,33 @@ public class DriveTrain
 		if(isHoldAngle)
 		{
 
-			turn = turn + ((targetAngle - gyro.getAngle()) / gyroHoldSensitivity);
+			turn = turn + ((targetAngle - gyro.getAngle()) / 20);
 
 		}
 
-		/*
-		 * if(Math.abs(targetTilt - tilt.getAngle()) > 5) { if(tilt.getAngle() > 0) { y = y -
-		 * ((targetTilt - tilt.getAngle()) / 50); } else { y = y + ((targetTilt - tilt.getAngle()) /
-		 * 50); } }
-		 */
-
-		turn = turn / -3;
-		if(isSlowDrive)
+		if(Math.abs(targetTilt - tilt.getAngle()) > 5)
 		{
-			fl.set((y + x + turn) * flInv * 0.6);
-			bl.set((y - x + turn) * blInv * 0.6);
-			fr.set((y - x - turn) * frInv * 0.6);
-			br.set((y + x - turn) * brInv * 0.6);
+			if(tilt.getAngle() > 0)
+			{
+				y = y - ((targetTilt - tilt.getAngle()) / 50);
+			}
+			else
+			{
+				y = y + ((targetTilt - tilt.getAngle()) / 50);
+			}
 		}
-		else
-		{
-			fl.set((y + x + turn) * flInv);
-			bl.set((y - x + turn) * blInv);
-			fr.set((y - x - turn) * frInv);
-			br.set((y + x - turn) * brInv);
+		
+		turn = turn / 1;
+		if (isSlowDrive) {
+			fl.set((y + x + turn) * -flInv * 0.5);
+			bl.set((y - x + turn) * -blInv * 0.5);
+			fr.set((y - x - turn) * -frInv * 0.5);
+			br.set((y + x - turn) * -brInv * 0.5);
+		} else {
+			fl.set((y + x + turn) * -flInv);
+			bl.set((y - x + turn) * -blInv);
+			fr.set((y - x - turn) * -frInv);
+			br.set((y + x - turn) * -brInv);
 		}
 
 	}
@@ -179,9 +182,9 @@ public class DriveTrain
 	public void resetEncoders()
 	{
 		flEncoder.reset();
+		blEncoder.reset();
 		frEncoder.reset();
-		// frEncoder.reset();
-		// brEncoder.reset();
+		brEncoder.reset();
 	}
 
 	public double getGyro()
@@ -194,19 +197,29 @@ public class DriveTrain
 		gyro.reset();
 	}
 
-	public void setGyroHoldSensitivity(double value)
-	{
-		gyroHoldSensitivity = value;
-	}
-
 	public void setTargetAngle(double angle)
 	{
 		targetAngle = angle;
 	}
 
+	public double getTilt()
+	{
+		return tilt.getAngle();
+	}
+
+	public void resetTilt()
+	{
+		tilt.reset();
+	}
+
+	public void setTargetTilt(double angle)
+	{
+		targetTilt = angle;
+	}
+
 	public int getDistanceMoved()
 	{
-		return (flEncoder.get() + frEncoder.get()/* + frEncoder.get() + brEncoder.get() */) / 2;
+		return (flEncoder.get() + blEncoder.get() + frEncoder.get() + brEncoder.get()) / 4;
 	}
 
 	public void stop()
