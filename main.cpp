@@ -2,8 +2,8 @@
 #include <wiringPi.h>
 
 #define GUI
-#define G1 8
-#define G2 9
+#define G1 4
+#define G2 5
 #define AUTO 15
 
 #include "sight.h"
@@ -15,44 +15,48 @@ int main()
 {
     cout << "program started\n";
     wiringPiSetup();
-    pinMode(8, OUTPUT); pinMode(9, OUTPUT);
+    pinMode(G1, OUTPUT); pinMode(G2, OUTPUT);
     cout << "pins set\n";
     //Sight sight(0, 240, 135);
     Sight sight(0, 160, 120);
     cout << "camera class instantiated\n";
-    #ifdef GUI
+    /*#ifdef GUI
         string name = "mainvindo";
         namedWindow(name, CV_WINDOW_AUTOSIZE);
-    #endif
+    #endif*/
     
     cout << "main loop starting\n";
     while (true) //Main loop
     {
         //cout << "updating info ";
         sight.update();
-        cout << sight.angle << "\n";
-        if (sight.angle == "u") {
+        //cout << sight.angle << "\t";
+        if (sight.angle == 0) {
+			cout << "setting off";
             digitalWrite(G1, LOW);
             digitalWrite(G2, LOW);
         }
-        else if (sight.angle == "l") { 
+        else if (sight.angle == 1) { 
+			cout << "setting left";
             digitalWrite(G1, HIGH);
             digitalWrite(G2, LOW);
         }
-        else if (sight.angle == "r") {
+        else if (sight.angle == 2) {
+			cout << "setting right";
             digitalWrite(G1, LOW);
             digitalWrite(G2, HIGH);
         }
-        else {
+        else if (sight.angle == 3) {
+			cout << "setting good";
             digitalWrite(G1, HIGH);
             digitalWrite(G2, HIGH);
         }
-        
-        #ifdef GUI
+        cout << endl;
+        /*#ifdef GUI
             cout << "\tdrawing gui\n";
             imshow(name, sight.getFrame());
             cvWaitKey(1);
-        #endif
+        #endif*/
     }
     /*while (true) {
 	socket << "test";

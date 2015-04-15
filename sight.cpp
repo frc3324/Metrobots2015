@@ -35,10 +35,16 @@ Mat Sight::getThresholded()
 }
 
 void Sight::getTote() {
+	//cout << "finding totes";
     Mat thresholded = getThresholded();
     vector< vector<Point> > contours;
     findContours(thresholded, contours, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
-    if (contours.size() == 0) return;
+    if (contours.size() == 0){
+		obj = false;
+		cout << "no contours detected\t";
+		return;
+	}
+	obj = true;
     Rect rect;
     int size, idx;
     //vector<Point> approx;
@@ -46,7 +52,7 @@ void Sight::getTote() {
     {
         //approx.clear();
         //approxPolyDP(contours.at(i), approx, 0.02*arcLength(contours.at(i), true), true);
-        if (contourArea(contours.at(i)) > size) {
+        if (contourArea(contours.at(i)) > 1000) {
             //size = contourArea(contours.at(i)); idx = i;
             cout << "tote found";
             tote = minAreaRect(contours.at(i));
@@ -56,15 +62,18 @@ void Sight::getTote() {
 }
 
 void Sight::getInfo() {
-    Size2f empty(0, 0);
-    if (tote.size == empty) return;
+    if (obj == false){
+		angle = 0;
+		cout << "no totes found\t";
+		return;
+	}
     float x = tote.center.x;
     int width = config->width;
     int threshold = 3;
 
-    if (x < width / 2 - threshold) angle = "l";
-    else if (x > width / 2 + threshold) angle = "r";
-    else angle = "g";
+    if (x < width / 2 - threshold) angle = 1;
+    else if (x > width / 2 + threshold) angle = 2;
+    else angle = 3;
 }
 
 void Sight::update() {

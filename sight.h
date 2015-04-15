@@ -24,11 +24,12 @@ public:
     void getInfo();
     Mat getFrame();
     RotatedRect tote;
-    char* angle = "u";
+    char angle = 0;
 
 private:
-    Scalar max = Scalar(35, 255, 246);
-    Scalar min = Scalar(15, 147, 180);
+	bool obj = false;
+    Scalar max = Scalar(38, 255, 255);
+    Scalar min = Scalar(16, 216, 100);
     RASPIVID_CONFIG* config;
     RaspiCamCvCapture* cam;
     Mat frame;
