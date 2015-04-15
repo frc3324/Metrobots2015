@@ -173,6 +173,11 @@ public class Auton
 
 		}
 	}
+	
+	public static void driveToTote() {
+		Robot.chassis.mecanumDrive(0, 0, Robot.sight.get()*.4);
+		//Robot.chassis.setTargetAngle(Robot.sight.get());
+	}
 
 	public static String getAutonType()
 	{

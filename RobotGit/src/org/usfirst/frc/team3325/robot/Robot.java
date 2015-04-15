@@ -54,6 +54,8 @@ public class Robot extends IterativeRobot
 	public static ArmLift armLift;
 
 	public static DriverStation ds;
+	
+	public static Vision sight;
 
 	public void robotInit()
 	{
@@ -94,6 +96,8 @@ public class Robot extends IterativeRobot
 		autonLift = new LinearLift(liftMotor, autonBottom, autonTop);
 
 		armLift = new ArmLift(armMotor, armBottom, armTop);
+		
+		sight = new Vision();
 
 		timer = new Timer();
 		timer.start();
@@ -127,7 +131,8 @@ public class Robot extends IterativeRobot
 	 */
 	public void autonomousPeriodic()
 	{
-		Auton.run();
+		//Auton.run();
+		Auton.driveToTote();
 		printValues();
 	}
 
@@ -266,6 +271,7 @@ public class Robot extends IterativeRobot
 		SmartDashboard.putBoolean("autonBottom", autonBottom.get());
 		SmartDashboard.putBoolean("autonTop", autonTop.get());
 		SmartDashboard.putBoolean("has tote", autonToteSensor.get());
+		SmartDashboard.putNumber("Auto angle", sight.get());
 
 
 		/*
