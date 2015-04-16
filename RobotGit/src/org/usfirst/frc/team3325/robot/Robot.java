@@ -117,9 +117,9 @@ public class Robot extends IterativeRobot
 		gyro.reset();
 		chassis.setDriveType(DriveTrain.MECANUM_DRIVE);
 
-		chassis.setHoldAngle(true);
+		chassis.setHoldAngle(false);
 		chassis.setTargetAngle(0);
-		chassis.setFieldOriented(true);
+		chassis.setFieldOriented(false);
 		chassis.setGyroHoldSensitivity(20);
 
 		Auton.setAutonCount(0);

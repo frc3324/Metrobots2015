@@ -22,4 +22,7 @@ public class Vision {
 		else if (!v0 && !v1) nd = true;
 		return 0;
 	}
+	public boolean hasTote() {
+		return nd;
+	}
 }
