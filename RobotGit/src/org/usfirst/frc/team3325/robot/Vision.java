@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 public class Vision {
 	DigitalInput pin1; DigitalInput pin2;
 	boolean v0, v1;
+	boolean nd = false;
 	
 	public Vision(){
 		pin1 = new DigitalInput(0);
@@ -14,10 +15,11 @@ public class Vision {
 	
 	public int get(){
 		v0 = pin1.get(); v1 = pin2.get();
+		nd = false;
 		if (v0 && v1) return 0;
 		else if (v0 && !v1) return -1;
 		else if (!v0 && v1) return 1;
-		else if (!v0 && !v1) return 0;
-		else return 0;
+		else if (!v0 && !v1) nd = true;
+		return 0;
 	}
 }

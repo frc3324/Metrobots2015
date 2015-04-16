@@ -117,10 +117,10 @@ public class Robot extends IterativeRobot
 		gyro.reset();
 		chassis.setDriveType(DriveTrain.MECANUM_DRIVE);
 
-		chassis.setHoldAngle(false);
+		chassis.setHoldAngle(true);
 		chassis.setTargetAngle(0);
-		chassis.setFieldOriented(false);
-		chassis.setGyroHoldSensitivity(2);
+		chassis.setFieldOriented(true);
+		chassis.setGyroHoldSensitivity(20);
 
 		Auton.setAutonCount(0);
 
@@ -270,7 +270,8 @@ public class Robot extends IterativeRobot
 
 		SmartDashboard.putBoolean("autonBottom", autonBottom.get());
 		SmartDashboard.putBoolean("autonTop", autonTop.get());
-		SmartDashboard.putBoolean("has tote", autonToteSensor.get());
+		SmartDashboard.putBoolean("has tote", autonGarage.beamBroken());
+		//SmartDashboard.putNumber("tote volts", autonGarage.input.getVoltage());
 		SmartDashboard.putNumber("Auto angle", sight.get());
 
 

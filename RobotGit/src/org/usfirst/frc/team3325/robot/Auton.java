@@ -175,7 +175,11 @@ public class Auton
 	}
 	
 	public static void driveToTote() {
-		Robot.chassis.mecanumDrive(0, 0, Robot.sight.get()*.4);
+		double delta = Robot.sight.get();
+		if (Robot.sight.nd) Robot.chassis.mecanumDrive(0, 0, 0);
+		else Robot.chassis.mecanumDrive(0.4, delta*.2, 0);
+		//else Robot.chassis.mecanumDrive(0.1, 0, delta*.4);
+		//else Robot.chassis.mecanumDrive(0.1, delta*.1, 0);
 		//Robot.chassis.setTargetAngle(Robot.sight.get());
 	}
 
