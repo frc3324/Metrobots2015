@@ -185,12 +185,13 @@ public class Robot extends IterativeRobot
 		}
 
 		armLift.set(lifterJS.getDPadY());
+		//autonLift.set(lifterJS.getAxis(MetroJS.RIGHT_Y));
 
-		if(lifterJS.getButton(MetroJS.RB))
+		if(lifterJS.getButton(MetroJS.BUTTON_Y))
 		{
 			autonLift.set(1);
 		}
-		else if(lifterJS.getButton(MetroJS.LB))
+		else if(lifterJS.getButton(MetroJS.BUTTON_A))
 		{
 			autonLift.set(-1);
 		}
@@ -266,11 +267,11 @@ public class Robot extends IterativeRobot
 
 		SmartDashboard.putNumber("lifterdpad", lifterJS.getDPadY());
 
-		SmartDashboard.putNumber("auytonCount", Auton.autonCount);
+		SmartDashboard.putNumber("autonCount", Auton.autonCount);
 
 		SmartDashboard.putBoolean("autonBottom", autonBottom.get());
 		SmartDashboard.putBoolean("autonTop", autonTop.get());
-		SmartDashboard.putBoolean("has tote", autonGarage.beamBroken());
+		SmartDashboard.putBoolean("has tote", sight.hasTote());
 		//SmartDashboard.putNumber("tote volts", autonGarage.input.getVoltage());
 		SmartDashboard.putNumber("Auto angle", sight.get());
 

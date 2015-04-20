@@ -7,11 +7,11 @@ import edu.wpi.first.wpilibj.Talon;
 
 public class LinearLift
 {
-	private static SpeedController motor;
+	public static Talon motor;
 	private static DigitalInput bottom;
 	private static DigitalInput top;
 
-	public LinearLift(SpeedController motor_, DigitalInput bottom_, DigitalInput top_)
+	public LinearLift(Talon motor_, DigitalInput bottom_, DigitalInput top_)
 	{
 
 		motor = motor_;
@@ -26,7 +26,7 @@ public class LinearLift
 
 	public void set(double value)
 	{
-		if((value > 0 && !top.get()) || (value < 0 && !bottom.get()))
+		if(/*(value > 0 && !top.get()) || (value < 0 && !bottom.get())*/ true)
 		{
 			motor.set(-value);
 		}
