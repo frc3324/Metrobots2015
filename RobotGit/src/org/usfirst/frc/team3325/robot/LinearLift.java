@@ -26,7 +26,7 @@ public class LinearLift
 
 	public void set(double value)
 	{
-		if(/*(value > 0 && !top.get()) || (value < 0 && !bottom.get())*/ true)
+		if((value > 0 && !top.get()) || (value < 0 && !bottom.get()))
 		{
 			motor.set(-value);
 		}
