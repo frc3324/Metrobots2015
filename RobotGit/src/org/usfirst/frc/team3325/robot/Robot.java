@@ -54,6 +54,8 @@ public class Robot extends IterativeRobot
 	public static ArmLift armLift;
 
 	public static DriverStation ds;
+	
+	public static Vision sight;
 
 	public void robotInit()
 	{
@@ -94,6 +96,8 @@ public class Robot extends IterativeRobot
 		autonLift = new LinearLift(liftMotor, autonBottom, autonTop);
 
 		armLift = new ArmLift(armMotor, armBottom, armTop);
+		
+		sight = new Vision();
 
 		timer = new Timer();
 		timer.start();
@@ -116,7 +120,7 @@ public class Robot extends IterativeRobot
 		chassis.setHoldAngle(false);
 		chassis.setTargetAngle(0);
 		chassis.setFieldOriented(false);
-		chassis.setGyroHoldSensitivity(2);
+		chassis.setGyroHoldSensitivity(20);
 
 		Auton.setAutonCount(0);
 
@@ -127,7 +131,8 @@ public class Robot extends IterativeRobot
 	 */
 	public void autonomousPeriodic()
 	{
-		Auton.run();
+		//Auton.run();
+		Auton.driveToTote();
 		printValues();
 	}
 
@@ -180,12 +185,13 @@ public class Robot extends IterativeRobot
 		}
 
 		armLift.set(lifterJS.getDPadY());
+		//autonLift.set(lifterJS.getAxis(MetroJS.RIGHT_Y));
 
-		if(lifterJS.getButton(MetroJS.RB))
+		if(lifterJS.getButton(MetroJS.BUTTON_Y))
 		{
 			autonLift.set(1);
 		}
-		else if(lifterJS.getButton(MetroJS.LB))
+		else if(lifterJS.getButton(MetroJS.BUTTON_A))
 		{
 			autonLift.set(-1);
 		}
@@ -261,11 +267,13 @@ public class Robot extends IterativeRobot
 
 		SmartDashboard.putNumber("lifterdpad", lifterJS.getDPadY());
 
-		SmartDashboard.putNumber("auytonCount", Auton.autonCount);
+		SmartDashboard.putNumber("autonCount", Auton.autonCount);
 
 		SmartDashboard.putBoolean("autonBottom", autonBottom.get());
 		SmartDashboard.putBoolean("autonTop", autonTop.get());
-		SmartDashboard.putBoolean("has tote", autonToteSensor.get());
+		SmartDashboard.putBoolean("has tote", sight.hasTote());
+		//SmartDashboard.putNumber("tote volts", autonGarage.input.getVoltage());
+		SmartDashboard.putNumber("Auto angle", sight.get());
 
 
 		/*
