@@ -35,17 +35,17 @@ int main()
             digitalWrite(G1, LOW);
             digitalWrite(G2, LOW);
         }
-        else if (sight.angle == 1) { //Robot is to the right of the tote, turn left pin on
+        else if (sight.angle == 1) { //Robot is to the left of the tote, turn left pin on
 			cout << "setting left";
             digitalWrite(G1, HIGH);
             digitalWrite(G2, LOW);
         }
-        else if (sight.angle == 2) { //Robot is to the left of the tote, turn right pin on
+        else if (sight.angle == 2) { //Robot is to the right of the tote, turn right pin on
 			cout << "setting right";
             digitalWrite(G1, LOW);
             digitalWrite(G2, HIGH);
         }
-        else if (sight.angle == 3) { //Robot is head-on with the tote, turn both pins off
+        else if (sight.angle == 3) { //Robot is head-on with the tote, turn both pins on
 			cout << "setting good";
             digitalWrite(G1, HIGH);
             digitalWrite(G2, HIGH);
