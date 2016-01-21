@@ -14,11 +14,10 @@ using namespace std;
 int main()
 {
     cout << "program started\n";
-    wiringPiSetup();
-    pinMode(G1, OUTPUT); pinMode(G2, OUTPUT);
+    wiringPiSetup(); //Sets up wiringPi
+    pinMode(G1, OUTPUT); pinMode(G2, OUTPUT); //Sets the pin modes for communication to the RoboRIO
     cout << "pins set\n";
-    //Sight sight(0, 240, 135);
-    Sight sight(0, 160, 120);
+    Sight sight(0, 160, 120); //Loads my main vision class
     cout << "camera class instantiated\n";
     /*#ifdef GUI
         string name = "mainvindo";
@@ -29,24 +28,24 @@ int main()
     while (true) //Main loop
     {
         //cout << "updating info ";
-        sight.update();
+        sight.update(); //Update the vision data
         //cout << sight.angle << "\t";
-        if (sight.angle == 0) {
+        if (sight.angle == 0) { //Unknown data, set all pins off
 			cout << "setting off";
             digitalWrite(G1, LOW);
             digitalWrite(G2, LOW);
         }
-        else if (sight.angle == 1) { 
+        else if (sight.angle == 1) { //Robot is to the right of the tote, turn left pin on
 			cout << "setting left";
             digitalWrite(G1, HIGH);
             digitalWrite(G2, LOW);
         }
-        else if (sight.angle == 2) {
+        else if (sight.angle == 2) { //Robot is to the left of the tote, turn right pin on
 			cout << "setting right";
             digitalWrite(G1, LOW);
             digitalWrite(G2, HIGH);
         }
-        else if (sight.angle == 3) {
+        else if (sight.angle == 3) { //Robot is head-on with the tote, turn both pins off
 			cout << "setting good";
             digitalWrite(G1, HIGH);
             digitalWrite(G2, HIGH);
